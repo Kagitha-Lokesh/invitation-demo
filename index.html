@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#641F2A" />
-  <title>Wedding Invitation — BRIDE NAME & GROOM NAME</title>
-  <meta name="description" content="You are cordially invited to the wedding celebration of BRIDE NAME and GROOM NAME." />
+  <title>Wedding Invitation — Ananya Reddy &amp; Aditya Varma</title>
+  <meta name="description" content="You are cordially invited to celebrate the wedding union of Ananya Reddy &amp; Aditya Varma on 18th January 2027 at Sri Lakshmi Convention Hall, Madhapur, Hyderabad." />
 
   <!-- Open Graph -->
   <meta property="og:type"        content="website" />
-  <meta property="og:title"       content="Wedding Invitation — BRIDE NAME & GROOM NAME" />
-  <meta property="og:description" content="Join us to celebrate our wedding. WEDDING DATE · VENUE NAME" />
+  <meta property="og:title"       content="Wedding Invitation — Ananya Reddy &amp; Aditya Varma" />
+  <meta property="og:description" content="Join us to celebrate our wedding. 18th January 2027 · Sri Lakshmi Convention Hall, Hyderabad" />
   <meta property="og:image"       content="" />
 
   <link rel="stylesheet" href="style.css" />
@@ -184,19 +184,12 @@
       <!-- Bride block -->
       <div class="person-block scroll-reveal delay-1" id="bride-block">
         <div class="person-image-wrap" id="bride-image-wrap">
-          <!-- Image loaded by JS, placeholder shown until then -->
-          <div class="person-image-placeholder" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
-              <path d="M20 21a8 8 0 1 0-16 0"/>
-            </svg>
-          </div>
+          <img src="images/brideImage.jpeg" alt="Ananya Reddy — Bride" loading="lazy" />
         </div>
         <div class="person-text">
           <span class="person-role">The Bride</span>
-          <span class="person-name" id="bride-name">BRIDE NAME</span>
-          <p class="person-desc" id="bride-desc"></p>
+          <span class="person-name" id="bride-name">Ananya Reddy</span>
+          <p class="person-desc" id="bride-desc">Beloved daughter of Sri Ramesh Reddy &amp; Smt. Lakshmi Devi</p>
         </div>
       </div>
 
@@ -209,33 +202,19 @@
       <!-- Groom block -->
       <div class="person-block reverse scroll-reveal delay-1" id="groom-block">
         <div class="person-image-wrap" id="groom-image-wrap">
-          <div class="person-image-placeholder" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
-              <path d="M20 21a8 8 0 1 0-16 0"/>
-            </svg>
-          </div>
+          <img src="images/groomImage.jpeg" alt="Aditya Varma — Groom" loading="lazy" />
         </div>
         <div class="person-text">
           <span class="person-role">The Groom</span>
-          <span class="person-name" id="groom-name">GROOM NAME</span>
-          <p class="person-desc" id="groom-desc"></p>
+          <span class="person-name" id="groom-name">Aditya Varma</span>
+          <p class="person-desc" id="groom-desc">Beloved son of Sri Srinivas Varma &amp; Smt. Padma Varma</p>
         </div>
       </div>
 
       <!-- Couple together -->
       <div class="couple-together scroll-reveal delay-2">
         <div class="couple-image-wrap" id="couple-image-wrap">
-          <div class="person-image-placeholder" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
+          <img src="images/couple.jpeg" alt="Ananya Reddy &amp; Aditya Varma" loading="lazy" />
         </div>
       </div>
 
@@ -315,21 +294,21 @@
       <!-- Date / Muhurtham block -->
       <div class="wedding-day-date-block scroll-reveal delay-2">
         <span class="wd-label">Date</span>
-        <div class="wd-date" id="wd-date">WEDDING DATE</div>
+        <div class="wd-date" id="wd-date">18th January 2027 (Monday)</div>
         <div class="wd-divider"></div>
         <span class="wd-label">Muhurtham</span>
-        <div class="wd-muhurtham" id="wd-muhurtham">MUHURTHAM TIME</div>
+        <div class="wd-muhurtham" id="wd-muhurtham">07:42 AM (ధనుర్ లగ్నం)</div>
       </div>
 
       <!-- Venue -->
       <div class="venue-block scroll-reveal delay-3">
         <span class="wd-label">Venue</span>
-        <div class="venue-name" id="wd-venue">VENUE NAME</div>
-        <p class="venue-address" id="wd-address">FULL VENUE ADDRESS</p>
+        <div class="venue-name" id="wd-venue">Sri Lakshmi Convention Hall</div>
+        <p class="venue-address" id="wd-address">Madhapur, Hyderabad, Telangana</p>
 
         <div style="margin-top: var(--sp-lg)">
           <a id="btn-directions-wedding"
-            href="#" target="_blank" rel="noopener noreferrer"
+            href="https://maps.app.goo.gl/T2X7Q9pLp3ZNCtbP7" target="_blank" rel="noopener noreferrer"
             class="btn btn-primary"
             aria-label="Get directions to the wedding venue">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -385,25 +364,18 @@
       </div>
 
       <p class="section-body t-center scroll-reveal delay-2">
-        <strong id="loc-venue">VENUE NAME</strong><br>
-        <span id="loc-address">FULL VENUE ADDRESS</span>
+        <strong id="loc-venue">Sri Lakshmi Convention Hall</strong><br>
+        <span id="loc-address">Madhapur, Hyderabad, Telangana</span>
       </p>
 
-      <!-- Map placeholder -->
+      <!-- Map preview / venue photo -->
       <div class="map-preview scroll-reveal delay-3" id="map-preview" role="presentation" aria-hidden="true">
-        <div class="map-preview-placeholder">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <p>Tap below to open in Maps</p>
-        </div>
+        <img src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlWNb-RU0KlCfccvK4pABV55IxGDTxzGWwEbhMh84DXNeNjx1VQAlGfE8CHiAeW777BVxDibhECaNhI2Hd5jabb_mOSvqqAg6z08tPvc08JwZAqgS8JmN22vRr0HNfDKf04p20=w408-h306-k-no" alt="Sri Lakshmi Convention Hall" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" />
       </div>
 
       <div class="location-actions scroll-reveal delay-4">
         <a id="btn-open-maps"
-          href="#" target="_blank" rel="noopener noreferrer"
+          href="https://maps.app.goo.gl/T2X7Q9pLp3ZNCtbP7" target="_blank" rel="noopener noreferrer"
           class="btn btn-primary"
           aria-label="Open venue in Google Maps">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -414,7 +386,7 @@
           Open in Google Maps
         </a>
         <a id="btn-directions-loc"
-          href="#" target="_blank" rel="noopener noreferrer"
+          href="https://maps.app.goo.gl/T2X7Q9pLp3ZNCtbP7" target="_blank" rel="noopener noreferrer"
           class="btn btn-outline"
           aria-label="Get directions to the venue">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -465,19 +437,19 @@
       <div class="join-summary scroll-reveal delay-3">
         <div class="join-row">
           <span class="join-label">Date</span>
-          <span class="join-value" id="join-date">WEDDING DATE</span>
+          <span class="join-value" id="join-date">18th January 2027 (Monday)</span>
         </div>
         <div class="join-row">
           <span class="join-label">Muhurtham</span>
-          <span class="join-value" id="join-muhurtham">MUHURTHAM TIME</span>
+          <span class="join-value" id="join-muhurtham">07:42 AM (ధనుర్ లగ్నం)</span>
         </div>
         <div class="join-row">
           <span class="join-label">Venue</span>
-          <span class="join-value" id="join-venue">VENUE NAME</span>
+          <span class="join-value" id="join-venue">Sri Lakshmi Convention Hall</span>
         </div>
         <div class="join-row">
           <span class="join-label">Address</span>
-          <span class="join-value" id="join-address">FULL ADDRESS</span>
+          <span class="join-value" id="join-address">Madhapur, Hyderabad, Telangana</span>
         </div>
       </div>
 
@@ -492,7 +464,7 @@
           RSVP
         </a>
 
-        <a id="btn-directions-join" href="#" target="_blank" rel="noopener noreferrer"
+        <a id="btn-directions-join" href="https://maps.app.goo.gl/T2X7Q9pLp3ZNCtbP7" target="_blank" rel="noopener noreferrer"
           class="btn btn-outline" style="border-color:rgba(200,164,93,0.5); color:var(--ivory);"
           aria-label="Get directions to the wedding venue">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"

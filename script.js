@@ -12,110 +12,130 @@
 const weddingDetails = {
 
   bride: {
-    name: "BRIDE NAME",
-    description: ""
+    name: "Ananya Reddy",
+    teluguName: "అనన్య రెడ్డి",
+    description: "Beloved daughter of Sri Ramesh Reddy & Smt. Lakshmi Devi"
   },
 
   groom: {
-    name: "GROOM NAME",
-    description: ""
+    name: "Aditya Varma",
+    teluguName: "ఆదిత్య వర్మ",
+    description: "Beloved son of Sri Srinivas Varma & Smt. Padma Varma"
   },
 
   families: {
     brideFamily: [
-      // { name: "Father Name", relation: "Father of the Bride" },
-      // { name: "Mother Name", relation: "Mother of the Bride" },
+      { name: "Sri Ramesh Reddy", relation: "Father of the Bride" },
+      { name: "Smt. Lakshmi Devi", relation: "Mother of the Bride" },
+      { name: "Sri Narasimha Reddy", relation: "Grandfather" },
+      { name: "Smt. Savitri Devi", relation: "Grandmother" }
     ],
     groomFamily: [
-      // { name: "Father Name", relation: "Father of the Groom" },
-      // { name: "Mother Name", relation: "Mother of the Groom" },
+      { name: "Sri Srinivas Varma", relation: "Father of the Groom" },
+      { name: "Smt. Padma Varma", relation: "Mother of the Groom" },
+      { name: "Sri Venkatesh Varma", relation: "Grandfather" },
+      { name: "Smt. Saroja Devi", relation: "Grandmother" }
     ]
   },
 
   wedding: {
-    date:        "YYYY-MM-DD",    // ISO date: "2025-02-14"
-    displayDate: "WEDDING DATE",  // e.g. "14 February 2025"
-    muhurtham:   "MUHURTHAM TIME",// e.g. "7:30 AM"
-    venue:       "VENUE NAME",
-    address:     "FULL VENUE ADDRESS",
-    city:        "",
-    state:       "",
-    pincode:     "",
-    mapsUrl:     "",              // Google Maps URL
-    bhojanalu:   "Traditional Telugu Bhojanalu will be served.",
+    date: "2027-01-18",    // ISO date: "2027-01-18"
+    displayDate: "18th January 2027",  // e.g. "18th January 2027"
+    day: "Monday",
+    muhurtham: "07:42 AM (ధనుర్ లగ్న సుముహూర్తమున)",
+    venue: "Sri Lakshmi Convention Hall",
+    address: "Madhapur, Hyderabad, Telangana",
+    city: "Hyderabad",
+    state: "Telangana",
+    pincode: "500081",
+    mapsUrl: "https://maps.app.goo.gl/T2X7Q9pLp3ZNCtbP7",              // Google Maps URL
+    bhojanalu: "Traditional Telugu Bhojanalu will be served.",
     menu: [
-      // {
-      //   category: "Rice",
-      //   items: ["Steamed Rice", "Pulihora", "Coconut Rice"]
-      // },
-      // {
-      //   category: "Dal",
-      //   items: ["Pappu", "Sambar"]
-      // },
-      // {
-      //   category: "Curries",
-      //   items: ["Gutti Vankaya", "Aloo Fry"]
-      // },
-      // {
-      //   category: "Sweets",
-      //   items: ["Boondi Laddu", "Payasam", "Kheer"]
-      // }
+      {
+        category: "Sweets & Desserts",
+        items: ["Bobbatlu", "Boondi Laddu", "Kobbari Payasam", "Double Ka Meetha", "Ice Cream"]
+      },
+      {
+        category: "Rice Items",
+        items: ["Pulihora", "Ghee Rice", "Steamed Rice"]
+      },
+      {
+        category: "Curries & Fries",
+        items: ["Gutti Vankaya", "Bendakaya Fry", "Paneer Curry"]
+      },
+      {
+        category: "Dal & Sambar",
+        items: ["Tomato Pappu", "Mudda Pappu", "Sambar", "Rasam"]
+      },
+      {
+        category: "Sides & Chutneys",
+        items: ["Allam Pachadi", "Gongura Pachadi", "Appadalu", "Fresh Curd"]
+      }
     ]
   },
 
   events: [
     {
       id: "nischitartham",
-      name: "Nischitartham",
+      name: "Engagement",
       teluguName: "నిశ్చితార్థం",
-      date: "",
-      displayDate: "",
-      time: "",
-      venue: ""
+      date: "2027-01-10",
+      displayDate: "10th January 2027",
+      time: "6:30 PM",
+      venue: "Sri Lakshmi Convention Hall"
     },
     {
       id: "pasupu",
-      name: "Pasupu",
-      teluguName: "పసుపు",
-      date: "",
-      displayDate: "",
-      time: "",
-      venue: ""
+      name: "Pasupu Veduka",
+      teluguName: "పసుపు వేడుక",
+      date: "2027-01-16",
+      displayDate: "16th January 2027",
+      time: "10:00 AM",
+      venue: "Sri Lakshmi Convention Hall"
+    },
+    {
+      id: "sangeet",
+      name: "Sangeet Night",
+      teluguName: "సంగీత్",
+      date: "2027-01-16",
+      displayDate: "16th January 2027",
+      time: "7:00 PM",
+      venue: "Sri Lakshmi Convention Hall"
     },
     {
       id: "wedding",
-      name: "Wedding",
+      name: "Wedding Ceremony",
       teluguName: "వివాహం",
-      date: "",
-      displayDate: "",
-      time: "",
-      venue: ""
+      date: "2027-01-18",
+      displayDate: "18th January 2027 (Monday)",
+      time: "7:42 AM (ధనుర్ లగ్నం)",
+      venue: "Sri Lakshmi Convention Hall"
     },
     {
       id: "reception",
-      name: "Reception",
-      teluguName: "రిసెప్షన్",
-      date: "",
-      displayDate: "",
-      time: "",
-      venue: ""
+      name: "Reception & Dinner",
+      teluguName: "విందు / రిసెప్షన్",
+      date: "2027-01-18",
+      displayDate: "18th January 2027",
+      time: "7:00 PM",
+      venue: "Sri Lakshmi Convention Hall"
     }
   ],
 
-  rsvpUrl:    "",    // External RSVP URL — leave empty to show inline form
-  rsvpMailto: "",    // mailto address for RSVP form fallback e.g. "family@example.com"
+  rsvpUrl: "",    // External RSVP URL — leave empty to show inline form
+  rsvpMailto: "kagithalokesh8@example.com",    // mailto address for RSVP form fallback
 
   contacts: {
-    phone:     "",   // e.g. "+919876543210"
-    whatsapp:  ""    // e.g. "+919876543210" (without spaces/dashes)
+    phone: "+917032817065",   // Phone contact
+    whatsapp: "+917032817065" // WhatsApp contact
   },
 
   images: {
-    bride:     "",   // e.g. "images/bride.jpg"
-    groom:     "",   // e.g. "images/groom.jpg"
-    couple:    "",   // e.g. "images/couple.jpg"
-    family:    "",
-    venue:     "",
+    bride: "images/brideImage.jpeg",
+    groom: "images/groomImage.jpeg",
+    couple: "images/couple.jpeg",   // e.g. "images/couple.jpg"
+    family: "",
+    venue: "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlWNb-RU0KlCfccvK4pABV55IxGDTxzGWwEbhMh84DXNeNjx1VQAlGfE8CHiAeW777BVxDibhECaNhI2Hd5jabb_mOSvqqAg6z08tPvc08JwZAqgS8JmN22vRr0HNfDKf04p20=w408-h306-k-no",
     bhojanalu: ""
   },
 
@@ -146,32 +166,32 @@ function populateContent() {
   const { bride, groom, wedding, events, contacts, images } = weddingDetails;
 
   // Names
-  setTextIfEl('hero-bride-name',  bride.name);
-  setTextIfEl('hero-groom-name',  groom.name);
-  setTextIfEl('bride-name',       bride.name);
-  setTextIfEl('groom-name',       groom.name);
-  setTextIfEl('closing-bride',    bride.name);
-  setTextIfEl('closing-groom',    groom.name);
+  setTextIfEl('hero-bride-name', bride.name);
+  setTextIfEl('hero-groom-name', groom.name);
+  setTextIfEl('bride-name', bride.name);
+  setTextIfEl('groom-name', groom.name);
+  setTextIfEl('closing-bride', bride.name);
+  setTextIfEl('closing-groom', groom.name);
 
   // Descriptions
   if (bride.description) setTextIfEl('bride-desc', bride.description);
   if (groom.description) setTextIfEl('groom-desc', groom.description);
 
   // Wedding day info
-  setTextIfEl('wd-date',       wedding.displayDate);
-  setTextIfEl('wd-muhurtham',  wedding.muhurtham);
-  setTextIfEl('wd-venue',      wedding.venue);
-  setTextIfEl('wd-address',    wedding.address);
+  setTextIfEl('wd-date', wedding.displayDate);
+  setTextIfEl('wd-muhurtham', wedding.muhurtham);
+  setTextIfEl('wd-venue', wedding.venue);
+  setTextIfEl('wd-address', wedding.address);
 
   // Join us
-  setTextIfEl('join-date',      wedding.displayDate);
+  setTextIfEl('join-date', wedding.displayDate);
   setTextIfEl('join-muhurtham', wedding.muhurtham);
-  setTextIfEl('join-venue',     wedding.venue);
-  setTextIfEl('join-address',   buildAddress(wedding));
+  setTextIfEl('join-venue', wedding.venue);
+  setTextIfEl('join-address', buildAddress(wedding));
 
   // Location
-  setTextIfEl('loc-venue',    wedding.venue);
-  setTextIfEl('loc-address',  buildAddress(wedding));
+  setTextIfEl('loc-venue', wedding.venue);
+  setTextIfEl('loc-address', buildAddress(wedding));
 
   // Maps URLs
   const mapsUrl = wedding.mapsUrl || '#';
@@ -193,9 +213,10 @@ function populateContent() {
   }
 
   // Images
-  if (images.bride)  loadPersonImage('bride-image-wrap',  images.bride,  bride.name  + ' — Bride');
-  if (images.groom)  loadPersonImage('groom-image-wrap',  images.groom,  groom.name  + ' — Groom');
-  if (images.couple) loadPersonImage('couple-image-wrap', images.couple, bride.name  + ' & ' + groom.name);
+  if (images.bride) loadPersonImage('bride-image-wrap', images.bride, bride.name + ' — Bride');
+  if (images.groom) loadPersonImage('groom-image-wrap', images.groom, groom.name + ' — Groom');
+  if (images.couple) loadPersonImage('couple-image-wrap', images.couple, bride.name + ' & ' + groom.name);
+  if (images.venue) loadVenueImage('map-preview', images.venue, wedding.venue);
 
   // Families
   populateFamilies();
@@ -231,14 +252,36 @@ function buildAddress(w) {
 function loadPersonImage(wrapperId, src, alt) {
   const wrap = document.getElementById(wrapperId);
   if (!wrap) return;
+  const existingImg = wrap.querySelector('img');
+  if (existingImg) {
+    existingImg.src = src;
+    existingImg.alt = alt;
+    return;
+  }
   const img = document.createElement('img');
   img.src = src;
   img.alt = alt;
   img.loading = 'lazy';
   img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-  img.onerror = () => {}; // keep placeholder if image fails
+  img.onerror = () => { }; // keep placeholder if image fails
   img.onload = () => {
     const placeholder = wrap.querySelector('.person-image-placeholder');
+    if (placeholder) placeholder.remove();
+    wrap.appendChild(img);
+  };
+}
+
+function loadVenueImage(wrapperId, src, alt) {
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = alt || 'Wedding Venue';
+  img.loading = 'lazy';
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+  img.onerror = () => { };
+  img.onload = () => {
+    const placeholder = wrap.querySelector('.map-preview-placeholder');
     if (placeholder) placeholder.remove();
     wrap.appendChild(img);
   };
@@ -258,7 +301,7 @@ function populateFamilies() {
   if (!hasB && !hasG) {
     // Just show placeholder family blocks
     grid.innerHTML = buildFamilyCard(bride.name + "'s Family", brideFamily) +
-                     buildFamilyCard(groom.name + "'s Family", groomFamily);
+      buildFamilyCard(groom.name + "'s Family", groomFamily);
     return;
   }
 
@@ -270,8 +313,8 @@ function populateFamilies() {
 function buildFamilyCard(title, members) {
   const memberHTML = (members && members.length > 0)
     ? `<ul class="family-members">${members.map(m =>
-        `<li>${m.name}${m.relation ? ` <em style="opacity:0.6">— ${m.relation}</em>` : ''}</li>`
-      ).join('')}</ul>`
+      `<li>${m.name}${m.relation ? ` <em style="opacity:0.6">— ${m.relation}</em>` : ''}</li>`
+    ).join('')}</ul>`
     : '';
 
   return `
@@ -400,7 +443,7 @@ function wireButtons() {
 
   // RSVP
   const rsvpSection = document.getElementById('rsvp-section');
-  const rsvpExtBtn  = document.getElementById('btn-rsvp-ext');
+  const rsvpExtBtn = document.getElementById('btn-rsvp-ext');
   if (rsvpUrl) {
     if (rsvpExtBtn) {
       rsvpExtBtn.href = rsvpUrl;
@@ -443,17 +486,17 @@ function wireButtons() {
 /* ─── RSVP Attendance choice ─── */
 let rsvpAttendance = null;
 
-window.handleRsvpAttend = function(choice) {
+window.handleRsvpAttend = function (choice) {
   rsvpAttendance = choice;
   const yesBtn = document.getElementById('rsvp-yes');
-  const noBtn  = document.getElementById('rsvp-no');
+  const noBtn = document.getElementById('rsvp-no');
   const formFields = document.getElementById('rsvp-form');
 
   yesBtn && yesBtn.setAttribute('aria-pressed', choice === 'yes' ? 'true' : 'false');
-  noBtn  && noBtn.setAttribute('aria-pressed', choice === 'no'  ? 'true' : 'false');
+  noBtn && noBtn.setAttribute('aria-pressed', choice === 'no' ? 'true' : 'false');
 
   yesBtn && yesBtn.classList.toggle('selected-yes', choice === 'yes');
-  noBtn  && noBtn.classList.toggle('selected-no',  choice === 'no');
+  noBtn && noBtn.classList.toggle('selected-no', choice === 'no');
 
   if (formFields) {
     formFields.classList.toggle('visible', choice === 'yes');
@@ -467,10 +510,10 @@ window.handleRsvpAttend = function(choice) {
 
 function handleRsvpSubmit(e) {
   e.preventDefault();
-  const name    = document.getElementById('rsvp-name')?.value.trim();
-  const guests  = document.getElementById('rsvp-guests')?.value;
+  const name = document.getElementById('rsvp-name')?.value.trim();
+  const guests = document.getElementById('rsvp-guests')?.value;
   const message = document.getElementById('rsvp-message')?.value.trim();
-  const mailto  = weddingDetails.rsvpMailto;
+  const mailto = weddingDetails.rsvpMailto;
 
   if (!name) {
     document.getElementById('rsvp-name')?.focus();
@@ -496,9 +539,9 @@ function handleRsvpSubmit(e) {
 }
 
 function showRsvpSuccess(msg) {
-  const form    = document.getElementById('rsvp-form');
+  const form = document.getElementById('rsvp-form');
   const success = document.getElementById('rsvp-success');
-  if (form)    form.style.display    = 'none';
+  if (form) form.style.display = 'none';
   if (success) {
     success.classList.add('visible');
     const p = success.querySelector('p');
@@ -532,7 +575,7 @@ function generateICSDownload() {
     if (ampm === 'PM' && h !== 12) h += 12;
     if (ampm === 'AM' && h === 12) h = 0;
     startHour = h;
-    startMin  = m;
+    startMin = m;
   }
 
   const pad = n => String(n).padStart(2, '0');
@@ -575,9 +618,9 @@ function generateICSDownload() {
   ].join('\r\n');
 
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
   a.download = 'wedding-invitation.ics';
   document.body.appendChild(a);
   a.click();
@@ -1212,10 +1255,10 @@ function initMusic() {
   const { musicUrl } = weddingDetails;
   if (!musicUrl) return;
 
-  const control    = document.getElementById('music-control');
-  const audio      = document.getElementById('bg-music');
-  const iconPlay   = document.getElementById('music-icon-play');
-  const iconPause  = document.getElementById('music-icon-pause');
+  const control = document.getElementById('music-control');
+  const audio = document.getElementById('bg-music');
+  const iconPlay = document.getElementById('music-icon-play');
+  const iconPause = document.getElementById('music-icon-pause');
 
   if (!control || !audio) return;
 
@@ -1228,14 +1271,14 @@ function initMusic() {
     if (playing) {
       audio.pause();
       playing = false;
-      iconPlay.style.display  = 'block';
+      iconPlay.style.display = 'block';
       iconPause.style.display = 'none';
       control.setAttribute('aria-label', 'Play background music');
     } else {
       audio.play()
         .then(() => {
           playing = true;
-          iconPlay.style.display  = 'none';
+          iconPlay.style.display = 'none';
           iconPause.style.display = 'block';
           control.setAttribute('aria-label', 'Pause background music');
         })
@@ -1243,9 +1286,9 @@ function initMusic() {
           // Autoplay blocked — user must interact first, which they just did
           audio.play().then(() => {
             playing = true;
-            iconPlay.style.display  = 'none';
+            iconPlay.style.display = 'none';
             iconPause.style.display = 'block';
-          }).catch(() => {});
+          }).catch(() => { });
         });
     }
   });
