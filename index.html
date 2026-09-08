@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#641F2A" />
+  <title>Wedding Invitation — BRIDE NAME & GROOM NAME</title>
+  <meta name="description" content="You are cordially invited to the wedding celebration of BRIDE NAME and GROOM NAME." />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Wedding Invitation — BRIDE NAME & GROOM NAME" />
+  <meta property="og:description" content="Join us to celebrate our wedding. WEDDING DATE · VENUE NAME" />
+  <meta property="og:image"       content="" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ─── CHAPTER INDICATOR ─── -->
+  <nav id="chapter-indicator" aria-label="Page chapters">
+    <div class="chapter-dots" id="chapter-dots"></div>
+  </nav>
+
+  <!-- ─── MUSIC CONTROL ─── -->
+  <button id="music-control" aria-label="Toggle background music" title="Music">
+    <svg id="music-icon-play"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <svg id="music-icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+  </button>
+
+  <!-- ============================================================
+       SECTION 01 — HERO
+       Scroll-driven: 250vh section, video scrubs with scroll
+       ============================================================ -->
+  <section id="hero" class="section cinematic-scroll" data-chapter="1" data-chapter-name="Invitation" style="height: 250vh">
+
+    <div class="cinematic-sticky">
+
+      <!-- Portrait cinematic video — currentTime driven by scroll -->
+      <div class="cinematic-frame">
+        <video
+          id="video-hero"
+          class="cinematic-main-video"
+          src="hero.mp4"
+          muted
+          playsinline
+          preload="auto"
+          aria-hidden="true"
+          tabindex="-1"
+        ></video>
+      </div>
+
+      <!-- Gradient overlays -->
+      <div class="hero-overlay-top"  aria-hidden="true"></div>
+      <div class="hero-overlay-bottom" aria-hidden="true"></div>
+
+      <!-- Overlay text -->
+      <div class="hero-content">
+        <span class="hero-eyebrow scroll-reveal">
+          WITH THE BLESSINGS<br>OF OUR FAMILIES
+        </span>
+        <div class="hero-names">
+          <span class="hero-bride-name scroll-reveal delay-1" id="hero-bride-name">BRIDE NAME</span>
+          <span class="hero-ampersand scroll-reveal delay-2">&amp;</span>
+          <span class="hero-groom-name scroll-reveal delay-3" id="hero-groom-name">GROOM NAME</span>
+        </div>
+        <p class="hero-tagline scroll-reveal delay-4">
+          invite you to celebrate their wedding
+        </p>
+        <div class="hero-scroll scroll-reveal delay-5" aria-hidden="true">
+          <span class="hero-scroll-text">Scroll to reveal</span>
+          <svg class="hero-scroll-arrow" xmlns="http://www.w3.org/2000/svg"
+            width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Fade into Section 02 -->
+      <div class="hero-transition" aria-hidden="true"></div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 02 — FAMILY BLESSINGS
+       ============================================================ -->
+  <section id="family-blessings" class="section" data-chapter="2" data-chapter-name="Families">
+    <div class="family-blessings-inner">
+
+      <!-- Toranam motif top -->
+      <div class="scroll-reveal" aria-hidden="true">
+        <!-- Inline SVG: mango leaf toranam -->
+        <svg class="toranam-motif" viewBox="0 0 340 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Central flower -->
+          <circle cx="170" cy="30" r="5" fill="currentColor" opacity="0.6"/>
+          <circle cx="170" cy="30" r="9" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.4"/>
+          <!-- Left rope line -->
+          <path d="M 161 30 Q 140 18 120 28 Q 100 38 80 26 Q 60 14 40 25 Q 20 35 5 28"
+                stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/>
+          <!-- Right rope line -->
+          <path d="M 179 30 Q 200 18 220 28 Q 240 38 260 26 Q 280 14 300 25 Q 320 35 335 28"
+                stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/>
+          <!-- Left mango leaves -->
+          <ellipse cx="52" cy="19" rx="11" ry="5" transform="rotate(-30 52 19)" fill="currentColor" opacity="0.35"/>
+          <ellipse cx="92" cy="22" rx="11" ry="5" transform="rotate(-20 92 22)" fill="currentColor" opacity="0.35"/>
+          <ellipse cx="132" cy="24" rx="11" ry="5" transform="rotate(-10 132 24)" fill="currentColor" opacity="0.35"/>
+          <!-- Right mango leaves -->
+          <ellipse cx="288" cy="19" rx="11" ry="5" transform="rotate(30 288 19)" fill="currentColor" opacity="0.35"/>
+          <ellipse cx="248" cy="22" rx="11" ry="5" transform="rotate(20 248 22)" fill="currentColor" opacity="0.35"/>
+          <ellipse cx="208" cy="24" rx="11" ry="5" transform="rotate(10 208 24)" fill="currentColor" opacity="0.35"/>
+          <!-- Dotted marigolds on rope -->
+          <circle cx="65"  cy="26" r="3" fill="currentColor" opacity="0.45"/>
+          <circle cx="105" cy="27" r="3" fill="currentColor" opacity="0.45"/>
+          <circle cx="145" cy="28" r="3" fill="currentColor" opacity="0.45"/>
+          <circle cx="195" cy="28" r="3" fill="currentColor" opacity="0.45"/>
+          <circle cx="235" cy="27" r="3" fill="currentColor" opacity="0.45"/>
+          <circle cx="275" cy="26" r="3" fill="currentColor" opacity="0.45"/>
+        </svg>
+      </div>
+
+      <div class="ornament-divider scroll-reveal" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <h1 class="section-title t-center scroll-reveal" style="font-size: clamp(1.75rem, 8vw, 3.5rem);">
+        With the Blessings<br>of Our Families
+      </h1>
+
+      <!-- Diya group -->
+      <div class="diya-group scroll-reveal delay-2" aria-hidden="true">
+        <!-- Left diya -->
+        <div class="diya-wrap">
+          <div class="diya-flame"></div>
+          <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="16" cy="16" rx="14" ry="6" fill="#C8A45D" opacity="0.7"/>
+            <ellipse cx="16" cy="14" rx="10" ry="4" fill="#D7A928" opacity="0.5"/>
+            <ellipse cx="16" cy="12" rx="7"  ry="3" fill="#9A7740" opacity="0.6"/>
+            <rect x="13" y="17" width="6" height="4" rx="1" fill="#C8A45D" opacity="0.5"/>
+          </svg>
+        </div>
+        <!-- Right diya -->
+        <div class="diya-wrap">
+          <div class="diya-flame"></div>
+          <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="16" cy="16" rx="14" ry="6" fill="#C8A45D" opacity="0.7"/>
+            <ellipse cx="16" cy="14" rx="10" ry="4" fill="#D7A928" opacity="0.5"/>
+            <ellipse cx="16" cy="12" rx="7"  ry="3" fill="#9A7740" opacity="0.6"/>
+            <rect x="13" y="17" width="6" height="4" rx="1" fill="#C8A45D" opacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Muggu -->
+      <div class="muggu-container scroll-reveal delay-1" aria-hidden="true">
+        <svg id="muggu-svg" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Rangoli / Muggu pattern: concentric star + dots -->
+          <!-- Outer ring of dots -->
+          <g fill="#C8A45D" opacity="0.5">
+            <circle cx="110" cy="18"  r="2.5"/>
+            <circle cx="150" cy="28"  r="2.5"/>
+            <circle cx="182" cy="55"  r="2.5"/>
+            <circle cx="200" cy="92"  r="2.5"/>
+            <circle cx="196" cy="132" r="2.5"/>
+            <circle cx="172" cy="165" r="2.5"/>
+            <circle cx="138" cy="188" r="2.5"/>
+            <circle cx="98"  cy="196" r="2.5"/>
+            <circle cx="60"  cy="185" r="2.5"/>
+            <circle cx="30"  cy="162" r="2.5"/>
+            <circle cx="14"  cy="130" r="2.5"/>
+            <circle cx="14"  cy="90"  r="2.5"/>
+            <circle cx="30"  cy="56"  r="2.5"/>
+            <circle cx="62"  cy="28"  r="2.5"/>
+          </g>
+          <!-- Star paths drawn (muggu style) -->
+          <path class="muggu-path"
+            d="M110 40 L120 80 L160 70 L130 100 L155 135 L110 120 L65 135 L90 100 L60 70 L100 80 Z"
+            stroke="#C8A45D" stroke-width="1.2" fill="none"
+            stroke-dasharray="500" stroke-dashoffset="500"
+            opacity="0.65"
+          />
+          <path class="muggu-path"
+            d="M110 60 L118 92 L150 85 L127 108 L148 138 L110 124 L72 138 L93 108 L70 85 L102 92 Z"
+            stroke="#D7A928" stroke-width="0.9" fill="none"
+            stroke-dasharray="400" stroke-dashoffset="400"
+            opacity="0.5"
+          />
+          <!-- Inner flower -->
+          <circle cx="110" cy="110" r="14" stroke="#C8A45D" stroke-width="1" fill="#C8A45D" fill-opacity="0.12" opacity="0.7"/>
+          <circle cx="110" cy="110" r="5"  fill="#C8A45D" opacity="0.55"/>
+          <!-- Petals -->
+          <ellipse cx="110" cy="92" rx="3.5" ry="7" fill="#C8A45D" opacity="0.35"/>
+          <ellipse cx="110" cy="128" rx="3.5" ry="7" fill="#C8A45D" opacity="0.35"/>
+          <ellipse cx="92" cy="110" rx="7" ry="3.5" fill="#C8A45D" opacity="0.35"/>
+          <ellipse cx="128" cy="110" rx="7" ry="3.5" fill="#C8A45D" opacity="0.35"/>
+          <ellipse cx="98"  cy="98"  rx="3" ry="6" transform="rotate(-45 98 98)"  fill="#C8A45D" opacity="0.25"/>
+          <ellipse cx="122" cy="98"  rx="3" ry="6" transform="rotate(45 122 98)"  fill="#C8A45D" opacity="0.25"/>
+          <ellipse cx="122" cy="122" rx="3" ry="6" transform="rotate(-45 122 122)" fill="#C8A45D" opacity="0.25"/>
+          <ellipse cx="98"  cy="122" rx="3" ry="6" transform="rotate(45 98 122)"  fill="#C8A45D" opacity="0.25"/>
+        </svg>
+      </div>
+
+      <!-- Family cards -->
+      <div class="family-grid" id="family-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Jasmine ornament -->
+      <div class="jasmine-row scroll-reveal" aria-hidden="true">· · ✿ · · ✿ · · ✿ · ·</div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 03 — MEET THE COUPLE
+       ============================================================ -->
+  <section id="meet-couple" class="section" data-chapter="3" data-chapter-name="The Couple">
+    <div class="couple-intro-inner" id="couple-intro-inner">
+
+      <span class="section-eyebrow t-center scroll-reveal">With great joy</span>
+      <h2 class="section-title t-center scroll-reveal delay-1">Meet the Couple</h2>
+
+      <!-- Bride block -->
+      <div class="person-block scroll-reveal delay-1" id="bride-block">
+        <div class="person-image-wrap" id="bride-image-wrap">
+          <!-- Image loaded by JS, placeholder shown until then -->
+          <div class="person-image-placeholder" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
+              <path d="M20 21a8 8 0 1 0-16 0"/>
+            </svg>
+          </div>
+        </div>
+        <div class="person-text">
+          <span class="person-role">The Bride</span>
+          <span class="person-name" id="bride-name">BRIDE NAME</span>
+          <p class="person-desc" id="bride-desc"></p>
+        </div>
+      </div>
+
+      <div class="ornament-divider" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <!-- Groom block -->
+      <div class="person-block reverse scroll-reveal delay-1" id="groom-block">
+        <div class="person-image-wrap" id="groom-image-wrap">
+          <div class="person-image-placeholder" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
+              <path d="M20 21a8 8 0 1 0-16 0"/>
+            </svg>
+          </div>
+        </div>
+        <div class="person-text">
+          <span class="person-role">The Groom</span>
+          <span class="person-name" id="groom-name">GROOM NAME</span>
+          <p class="person-desc" id="groom-desc"></p>
+        </div>
+      </div>
+
+      <!-- Couple together -->
+      <div class="couple-together scroll-reveal delay-2">
+        <div class="couple-image-wrap" id="couple-image-wrap">
+          <div class="person-image-placeholder" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Silk transition motif -->
+  <div class="transition-band ivory-to-cream" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       SECTION 04 — TWO STORIES, ONE JOURNEY
+       ============================================================ -->
+  <section id="two-stories" class="section" data-chapter="4" data-chapter-name="Their Journey">
+
+    <div class="two-stories-inner">
+      <span class="section-eyebrow t-center scroll-reveal">A shared beginning</span>
+      <h2 class="section-title t-center scroll-reveal delay-1">
+        Two Stories,<br>One Journey
+      </h2>
+
+      <div class="ornament-divider scroll-reveal delay-2" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <p class="two-stories-intro scroll-reveal delay-3">
+        Two families, two worlds, one beautiful beginning.
+        Bound together by love, tradition, and the blessings of those who came before.
+      </p>
+    </div>
+
+    <!-- Scroll-driven couple video (220vh scrub range) -->
+    <div class="cinematic-scroll" id="cinematic-two-stories" style="height: 220vh">
+      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
+        <div class="cinematic-frame">
+          <video
+            id="video-couple"
+            class="cinematic-main-video"
+            src="couple.mp4"
+            muted
+            playsinline
+            preload="none"
+            aria-label="Cinematic video: Two Stories, One Journey"
+          ></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- After video quote -->
+    <div class="two-stories-quote">
+      <svg class="toranam-motif scroll-reveal" style="max-width:200px; margin:0 auto var(--sp-lg);" viewBox="0 0 340 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M 161 30 Q 140 18 120 28 Q 100 38 80 26 Q 60 14 40 25 Q 20 35 5 28" stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M 179 30 Q 200 18 220 28 Q 240 38 260 26 Q 280 14 300 25 Q 320 35 335 28" stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/>
+        <circle cx="170" cy="30" r="5" fill="currentColor" opacity="0.6"/>
+      </svg>
+
+      <blockquote class="story-quote-text scroll-reveal">
+        "And so, two journeys<br>became one."
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 05 — THE CELEBRATIONS (Timeline)
+       ============================================================ -->
+  <section id="celebrations" class="section" data-chapter="5" data-chapter-name="Celebrations">
+    <div class="celebrations-inner">
+
+      <span class="section-eyebrow t-center scroll-reveal">
+        A week of love &amp; tradition
+      </span>
+      <h2 class="section-title t-center scroll-reveal delay-1">The Celebrations</h2>
+
+      <div class="ornament-divider scroll-reveal delay-2" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <!-- Timeline — populated by JS -->
+      <div class="timeline" id="timeline-container">
+        <div class="timeline-line" id="timeline-line"></div>
+        <!-- Events injected by script.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <div class="transition-band cream-to-maroon" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       SECTION 06 — A DAY TO REMEMBER
+       ============================================================ -->
+  <section id="day-to-remember" class="section" data-chapter="6" data-chapter-name="A Day to Remember">
+
+    <div class="day-remember-header">
+      <span class="section-eyebrow scroll-reveal">Celebrating together</span>
+      <h2 class="section-title scroll-reveal delay-1" style="color:var(--ivory)">
+        A Day to Remember
+      </h2>
+    </div>
+
+    <!-- Scroll-driven celebrations video (200vh scrub range) -->
+    <div class="cinematic-scroll" id="cinematic-celebrations" style="height: 200vh">
+      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
+        <div class="cinematic-frame">
+          <video
+            id="video-celebrations"
+            class="cinematic-main-video"
+            src="celebrations.mp4"
+            muted
+            playsinline
+            preload="none"
+            aria-label="Cinematic video: A Day to Remember"
+          ></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-remember-message">
+      <div class="ornament-divider scroll-reveal" style="max-width:200px; margin:0 auto var(--sp-lg);" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+      <p class="scroll-reveal delay-1">
+        From the aroma of jasmine to the warmth of turmeric,
+        every ritual carries the love of generations past
+        and the joy of the journey ahead.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ============================================================
+       SECTION 07 — THE WEDDING DAY
+       ============================================================ -->
+  <section id="wedding-day" class="section" data-chapter="7" data-chapter-name="Wedding Day">
+    <div class="wedding-day-inner">
+
+      <span class="section-eyebrow scroll-reveal">The most sacred day</span>
+      <h2 class="section-title scroll-reveal delay-1">The Wedding Day</h2>
+      <p class="section-subtitle scroll-reveal delay-2">
+        <span class="t-telugu">వివాహ మహోత్సవం</span>
+      </p>
+      <p class="section-body scroll-reveal delay-3" style="margin-top:var(--sp-md)">
+        A day we would love to share with you.
+      </p>
+
+      <!-- Date / Muhurtham block -->
+      <div class="wedding-day-date-block scroll-reveal delay-2">
+        <span class="wd-label">Date</span>
+        <div class="wd-date" id="wd-date">WEDDING DATE</div>
+        <div class="wd-divider"></div>
+        <span class="wd-label">Muhurtham</span>
+        <div class="wd-muhurtham" id="wd-muhurtham">MUHURTHAM TIME</div>
+      </div>
+
+      <!-- Venue -->
+      <div class="venue-block scroll-reveal delay-3">
+        <span class="wd-label">Venue</span>
+        <div class="venue-name" id="wd-venue">VENUE NAME</div>
+        <p class="venue-address" id="wd-address">FULL VENUE ADDRESS</p>
+
+        <div style="margin-top: var(--sp-lg)">
+          <a id="btn-directions-wedding"
+            href="#" target="_blank" rel="noopener noreferrer"
+            class="btn btn-primary"
+            aria-label="Get directions to the wedding venue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+            </svg>
+            Get Directions
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── BHOJANALU ─── -->
+  <section id="bhojanalu" class="section" data-chapter="7" aria-label="Bhojanalu — traditional feast">
+    <div class="bhojanalu-inner">
+
+      <!-- Banana leaf visual top -->
+      <div class="banana-leaf-row scroll-reveal" aria-hidden="true">🌿 🌿 🌿 🌿 🌿</div>
+
+      <div class="ornament-divider scroll-reveal" style="border-color:rgba(200,164,93,0.3)" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="color:var(--gold-light)">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <span class="bhojanalu-title-tel scroll-reveal">భోజనాలు</span>
+      <span class="bhojanalu-title-en scroll-reveal delay-1">Bhojanalu</span>
+      <p class="bhojanalu-subtitle scroll-reveal delay-2">A Feast of Love &amp; Tradition</p>
+
+      <!-- Menu or placeholder — injected by JS -->
+      <div id="bhojanalu-content" class="scroll-reveal delay-3">
+        <p class="bhojanalu-message">Traditional Telugu Bhojanalu will be served.</p>
+      </div>
+
+      <div class="banana-leaf-row scroll-reveal" aria-hidden="true">🌿 🌿 🌿 🌿 🌿</div>
+
+    </div>
+  </section>
+
+  <!-- ─── LOCATION ─── -->
+  <section id="location" class="section" data-chapter="7" aria-label="Venue location">
+    <div class="location-inner">
+
+      <span class="section-eyebrow t-center scroll-reveal">How to find us</span>
+      <h2 class="section-title t-center scroll-reveal delay-1">Find Your Way to Us</h2>
+
+      <div class="ornament-divider scroll-reveal delay-2" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <p class="section-body t-center scroll-reveal delay-2">
+        <strong id="loc-venue">VENUE NAME</strong><br>
+        <span id="loc-address">FULL VENUE ADDRESS</span>
+      </p>
+
+      <!-- Map placeholder -->
+      <div class="map-preview scroll-reveal delay-3" id="map-preview" role="presentation" aria-hidden="true">
+        <div class="map-preview-placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <p>Tap below to open in Maps</p>
+        </div>
+      </div>
+
+      <div class="location-actions scroll-reveal delay-4">
+        <a id="btn-open-maps"
+          href="#" target="_blank" rel="noopener noreferrer"
+          class="btn btn-primary"
+          aria-label="Open venue in Google Maps">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          Open in Google Maps
+        </a>
+        <a id="btn-directions-loc"
+          href="#" target="_blank" rel="noopener noreferrer"
+          class="btn btn-outline"
+          aria-label="Get directions to the venue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+          </svg>
+          Get Directions
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 08 — THE SACRED BEGINNING
+       ============================================================ -->
+  <section id="sacred-beginning" class="section" data-chapter="8" data-chapter-name="Sacred Beginning">
+
+    <div class="sacred-header">
+      <span class="section-eyebrow t-center scroll-reveal">The divine union</span>
+      <h2 class="section-title t-center scroll-reveal delay-1">The Sacred Beginning</h2>
+      <p class="sacred-tel-subtitle t-center scroll-reveal delay-2">
+        మంగళకరమైన ఆరంభం
+      </p>
+    </div>
+
+    <!-- Scroll-driven wedding video (280vh — the climax, given the most range) -->
+    <div class="cinematic-scroll" id="cinematic-sacred" style="height: 280vh">
+      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
+        <div class="cinematic-frame">
+          <video
+            id="video-wedding"
+            class="cinematic-main-video"
+            src="wedding.mp4"
+            muted
+            playsinline
+            preload="none"
+            aria-label="Cinematic video: The Sacred Beginning — wedding ceremony"
+          ></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="sacred-after">
+      <div class="ornament-divider scroll-reveal" style="max-width:200px; margin:0 auto var(--sp-lg);" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+      <p class="sacred-vow-text scroll-reveal">
+        With sacred vows,<br>a beautiful new chapter begins.
+      </p>
+    </div>
+
+  </section>
+
+  <div class="transition-band ivory-to-maroon" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       SECTION 09 — JOIN US
+       ============================================================ -->
+  <section id="join-us" class="section" data-chapter="9" data-chapter-name="Join Us">
+    <div class="join-us-inner">
+
+      <span class="section-eyebrow scroll-reveal">We would be honoured</span>
+      <h2 class="section-title scroll-reveal delay-1" style="color:var(--ivory)">Join Us</h2>
+
+      <div class="ornament-divider scroll-reveal delay-2" style="border-color:rgba(200,164,93,0.3);" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="color:var(--gold-light)">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <p class="section-body scroll-reveal delay-2" style="color:var(--ivory); opacity:0.8; font-style:italic; font-size: clamp(1.1rem, 3.5vw, 1.25rem)">
+        Your presence would mean the world to us.
+      </p>
+
+      <!-- Quick summary -->
+      <div class="join-summary scroll-reveal delay-3">
+        <div class="join-row">
+          <span class="join-label">Date</span>
+          <span class="join-value" id="join-date">WEDDING DATE</span>
+        </div>
+        <div class="join-row">
+          <span class="join-label">Muhurtham</span>
+          <span class="join-value" id="join-muhurtham">MUHURTHAM TIME</span>
+        </div>
+        <div class="join-row">
+          <span class="join-label">Venue</span>
+          <span class="join-value" id="join-venue">VENUE NAME</span>
+        </div>
+        <div class="join-row">
+          <span class="join-label">Address</span>
+          <span class="join-value" id="join-address">FULL ADDRESS</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-grid scroll-reveal delay-4">
+        <a id="btn-rsvp-ext" href="#" class="btn btn-gold hidden" aria-label="RSVP for the wedding">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          RSVP
+        </a>
+
+        <a id="btn-directions-join" href="#" target="_blank" rel="noopener noreferrer"
+          class="btn btn-outline" style="border-color:rgba(200,164,93,0.5); color:var(--ivory);"
+          aria-label="Get directions to the wedding venue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+          </svg>
+          Directions
+        </a>
+
+        <button id="btn-calendar" class="btn btn-outline"
+          style="border-color:rgba(200,164,93,0.5); color:var(--ivory);"
+          aria-label="Add wedding to calendar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Add to Calendar
+        </button>
+
+        <a id="btn-whatsapp" href="#" class="btn btn-outline hidden"
+          style="border-color:rgba(200,164,93,0.5); color:var(--ivory);"
+          target="_blank" rel="noopener noreferrer"
+          aria-label="Contact via WhatsApp">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          WhatsApp
+        </a>
+
+        <a id="btn-phone" href="#" class="btn btn-outline hidden"
+          style="border-color:rgba(200,164,93,0.5); color:var(--ivory);"
+          aria-label="Call us">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.64 3.35 2 2 0 0 1 3.61 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.93-1a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.67 14l.25 2.92z"/>
+          </svg>
+          Call Us
+        </a>
+      </div>
+
+      <!-- ─── RSVP FORM (shown when no rsvpUrl) ─── -->
+      <div class="rsvp-section scroll-reveal delay-5" id="rsvp-section">
+
+        <h3 class="rsvp-title">RSVP</h3>
+        <p class="rsvp-question">Will you be joining us?</p>
+
+        <div class="rsvp-attend-btns">
+          <button class="rsvp-attend-btn" id="rsvp-yes" aria-pressed="false"
+            onclick="handleRsvpAttend('yes')">
+            YES, I'LL BE THERE
+          </button>
+          <button class="rsvp-attend-btn" id="rsvp-no" aria-pressed="false"
+            onclick="handleRsvpAttend('no')">
+            SORRY, CAN'T MAKE IT
+          </button>
+        </div>
+
+        <form class="rsvp-form-fields" id="rsvp-form" novalidate>
+          <div class="form-field">
+            <label class="form-label" for="rsvp-name">Your Name *</label>
+            <input type="text" id="rsvp-name" name="name" class="form-input"
+              placeholder="Full name" required autocomplete="name" />
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="rsvp-guests">Number of Guests</label>
+            <select id="rsvp-guests" name="guests" class="form-select form-input">
+              <option value="1">Just me</option>
+              <option value="2">2 guests</option>
+              <option value="3">3 guests</option>
+              <option value="4">4 guests</option>
+              <option value="5+">5 or more</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="rsvp-message">Message (optional)</label>
+            <textarea id="rsvp-message" name="message" class="form-textarea"
+              placeholder="Share your blessings..."></textarea>
+          </div>
+          <div class="form-submit">
+            <button type="submit" class="btn btn-gold" style="width:100%" id="rsvp-submit-btn">
+              Send RSVP
+            </button>
+          </div>
+        </form>
+
+        <div class="rsvp-success" id="rsvp-success" role="alert" aria-live="polite">
+          <p>With love &amp; gratitude ✦</p>
+          <p style="font-family:var(--font-body); font-size:var(--text-base); color:var(--ivory); opacity:0.75; margin-top:var(--sp-sm)">
+            Thank you — we look forward to celebrating with you!
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <div class="transition-band maroon-to-ivory" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       SECTION 10 — WITH LOVE
+       ============================================================ -->
+  <section id="with-love" class="section" data-chapter="10" data-chapter-name="With Love">
+
+    <div class="with-love-header">
+      <span class="section-eyebrow t-center scroll-reveal" style="color:var(--gold-light)">
+        With love, always
+      </span>
+      <h2 class="section-title t-center scroll-reveal delay-1" style="color:var(--ivory)">
+        With Love
+      </h2>
+
+      <div class="with-love-names scroll-reveal delay-2">
+        <span class="with-love-bride" id="closing-bride">BRIDE NAME</span>
+        <span class="with-love-amp">&amp;</span>
+        <span class="with-love-groom" id="closing-groom">GROOM NAME</span>
+      </div>
+
+      <p class="with-love-tagline scroll-reveal delay-3">
+        Thank you for being part of our beginning.
+      </p>
+    </div>
+
+    <!-- Scroll-driven final invitation video (250vh scrub range) -->
+    <div class="cinematic-scroll" id="cinematic-final" style="height: 250vh">
+      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
+        <div class="cinematic-frame">
+          <video
+            id="video-final"
+            class="cinematic-main-video"
+            src="finalinvitation.mp4"
+            muted
+            playsinline
+            preload="none"
+            aria-label="Final cinematic closing: With Love"
+          ></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- Closing blessing -->
+    <div class="closing-blessing">
+
+      <!-- Final diya -->
+      <div class="closing-diya scroll-reveal" aria-hidden="true">
+        <div class="diya-wrap" style="display:inline-flex; flex-direction:column; align-items:center; gap:2px;">
+          <div class="diya-flame" style="width:10px; height:20px;"></div>
+          <svg width="42" height="28" viewBox="0 0 42 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="21" cy="20" rx="18" ry="8"  fill="#C8A45D" opacity="0.7"/>
+            <ellipse cx="21" cy="18" rx="13" ry="5"  fill="#D7A928" opacity="0.5"/>
+            <ellipse cx="21" cy="15" rx="9"  ry="4"  fill="#9A7740" opacity="0.6"/>
+            <rect x="16" y="22" width="10" height="6" rx="1" fill="#C8A45D" opacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="ornament-divider scroll-reveal delay-1" style="max-width:200px; margin:var(--sp-lg) auto;" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="color:var(--gold-dark)">
+          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
+        </svg>
+      </div>
+
+      <span class="blessing-tel scroll-reveal delay-2">శుభమస్తు</span>
+      <span class="blessing-sub scroll-reveal delay-3">May it be auspicious</span>
+
+      <!-- Family names footer -->
+      <div id="families-footer" class="scroll-reveal delay-4"
+        style="margin-top:var(--sp-xl); font-family:var(--font-body); font-style:italic; color:var(--warm-brass); font-size:var(--text-sm); line-height:2.2;">
+        <!-- Injected by JS -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Hidden audio element -->
+  <audio id="bg-music" loop preload="none" style="display:none"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
