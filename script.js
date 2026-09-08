@@ -227,6 +227,9 @@ function populateContent() {
   // Timeline events
   populateTimeline();
 
+  // Venue & Timings Highlight Section
+  populateVenueTimingsSection();
+
   // Bhojanalu
   populateBhojanalu();
 
@@ -390,6 +393,39 @@ function populateTimeline() {
     placeholder.style.cssText = 'font-family:var(--font-body); font-style:italic; color:var(--warm-brass); font-size:1rem; line-height:1.7; margin-top:var(--sp-xl); opacity:0.7;';
     placeholder.textContent = 'Event details will be announced shortly. Please check back.';
     container.appendChild(placeholder);
+  }
+}
+
+/* ─── Venue & Timings Highlight Section ─── */
+function populateVenueTimingsSection() {
+  const { wedding, events } = weddingDetails;
+
+  setTextIfEl('vt-venue-name', wedding.venue);
+  setTextIfEl('vt-venue-address', wedding.address);
+  setTextIfEl('vt-date', wedding.displayDate);
+  setTextIfEl('vt-time', wedding.muhurtham ? wedding.muhurtham.split('(')[0].trim() : '07:42 AM');
+
+  const btn = document.getElementById('btn-vt-directions');
+  if (btn && wedding.mapsUrl) {
+    btn.href = wedding.mapsUrl;
+  }
+
+  const listEl = document.getElementById('vt-events-list');
+  if (listEl && events && events.length > 0) {
+    const activeEvents = events.filter(ev => ev.displayDate || ev.time || ev.name);
+    if (activeEvents.length > 0) {
+      listEl.innerHTML = activeEvents.map(ev => `
+        <div class="vt-event-row ${ev.id === 'wedding' ? 'vt-event-highlight' : ''}">
+          <div class="vt-ev-left">
+            <span class="vt-ev-name">${ev.name} ${ev.teluguName ? `<em class="t-telugu">${ev.teluguName}</em>` : ''}</span>
+          </div>
+          <div class="vt-ev-right">
+            <span class="vt-ev-date">${ev.displayDate || ''}</span>
+            <span class="vt-ev-time">${ev.time || ''}</span>
+          </div>
+        </div>
+      `).join('');
+    }
   }
 }
 

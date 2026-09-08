@@ -1152,58 +1152,263 @@ a {
   transform: scale(1.04);
 }
 
-/* Bhojanalu block */
-#bhojanalu {
-  background: var(--maroon);
-  padding: var(--sp-3xl) 0;
+/* ============================================================
+   VENUE & TIMINGS (Repurposed Highlight Section)
+   ============================================================ */
+.venue-timings-section {
+  background: radial-gradient(circle at 50% 20%, #561623 0%, var(--maroon) 70%, #340c14 100%);
+  padding: var(--sp-3xl) 0 var(--sp-2xl);
   color: var(--ivory);
   text-align: center;
+  position: relative;
 }
-.bhojanalu-inner {
+.venue-timings-inner {
   max-width: var(--max-content);
   margin: 0 auto;
   padding: 0 var(--sp-lg);
 }
-.bhojanalu-title-tel {
+.vt-title-tel {
   font-family: var(--font-telugu);
-  font-size: clamp(var(--text-3xl), 9vw, var(--text-5xl));
+  font-size: clamp(var(--text-3xl), 8.5vw, var(--text-5xl));
   color: var(--gold-light);
   display: block;
   line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
-.bhojanalu-title-en {
+.vt-title-en {
   font-family: var(--font-heading);
   font-size: clamp(var(--text-xl), 5vw, var(--text-3xl));
   font-weight: 300;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ivory);
   display: block;
-  margin-bottom: var(--sp-xs);
+  margin: var(--sp-xs) 0 0;
 }
-.bhojanalu-subtitle {
+.vt-subtitle {
   font-family: var(--font-body);
-  font-size: clamp(var(--text-base), 3vw, var(--text-lg));
+  font-size: clamp(var(--text-sm), 3vw, var(--text-base));
   font-style: italic;
   color: var(--gold-light);
-  opacity: 0.8;
-  margin-top: var(--sp-xs);
-}
-.bhojanalu-message {
-  font-family: var(--font-body);
-  font-size: clamp(var(--text-lg), 3.5vw, var(--text-xl));
-  font-style: italic;
-  color: var(--ivory);
   opacity: 0.85;
-  margin-top: var(--sp-xl);
-  line-height: 1.7;
+  margin-top: 4px;
+}
+
+/* Main Highlight Card */
+.vt-main-card {
+  margin: var(--sp-xl) auto var(--sp-2xl);
+  max-width: 480px;
+  background: linear-gradient(145deg, rgba(200, 164, 93, 0.12), rgba(44, 15, 22, 0.75));
+  border: 1px solid rgba(200, 164, 93, 0.4);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: var(--sp-xl) var(--sp-lg);
+  border-radius: 4px;
+  position: relative;
+}
+.vt-card-badge {
+  display: inline-block;
+  font-family: var(--font-util);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: var(--gold-light);
+  border-bottom: 1px solid rgba(200, 164, 93, 0.4);
+  padding-bottom: 4px;
+  margin-bottom: var(--sp-md);
+  text-transform: uppercase;
+}
+.vt-venue-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(var(--text-xl), 5vw, var(--text-2xl));
+  color: var(--gold-light);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.vt-venue-heading .vt-icon {
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.vt-venue-sub {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--ivory-soft);
+  opacity: 0.8;
+  margin: 4px 0 var(--sp-lg);
+  font-style: italic;
+}
+.vt-ceremony-details {
+  border-top: 1px dashed rgba(200, 164, 93, 0.35);
+  border-bottom: 1px dashed rgba(200, 164, 93, 0.35);
+  padding: var(--sp-md) 0;
+}
+.vt-date-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.vt-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.vt-label {
+  font-family: var(--font-util);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  opacity: 0.7;
+}
+.vt-value {
+  font-family: var(--font-heading);
+  font-size: clamp(var(--text-base), 3.8vw, var(--text-lg));
+  color: var(--ivory);
+  font-weight: 500;
+}
+.vt-day {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--gold);
+  font-style: italic;
+}
+.vt-telugu-note {
+  font-family: var(--font-telugu);
+  font-size: var(--text-xs);
+  color: var(--gold-light);
+}
+.vt-separator {
+  width: 1px;
+  height: 48px;
+  background: rgba(200, 164, 93, 0.3);
+}
+
+/* Ceremony Schedule List */
+.vt-events-section {
+  max-width: 480px;
+  margin: var(--sp-2xl) auto 0;
+  text-align: left;
+}
+.vt-events-heading {
+  font-family: var(--font-util);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  text-align: center;
+  margin-bottom: var(--sp-md);
+  opacity: 0.9;
+}
+.vt-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+}
+.vt-event-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(200, 164, 93, 0.15);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+.vt-event-row:hover {
+  background: rgba(200, 164, 93, 0.08);
+}
+.vt-event-highlight {
+  background: linear-gradient(90deg, rgba(200, 164, 93, 0.18), rgba(0,0,0,0.3));
+  border-color: rgba(200, 164, 93, 0.45);
+  box-shadow: 0 0 12px rgba(200, 164, 93, 0.12);
+}
+.vt-ev-left {
+  display: flex;
+  align-items: center;
+}
+.vt-ev-name {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--ivory);
+  letter-spacing: 0.04em;
+}
+.vt-ev-name em {
+  font-family: var(--font-telugu);
+  font-size: 0.85em;
+  color: var(--gold-light);
+  margin-left: 6px;
+  font-style: normal;
+}
+.vt-ev-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.vt-ev-date {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--ivory-soft);
+  opacity: 0.85;
+}
+.vt-ev-time {
+  font-family: var(--font-util);
+  font-size: 11px;
+  color: var(--gold-light);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Collapsible Bhojanalu Accordion */
+.vt-bhojanalu-wrap {
+  max-width: 480px;
+  margin: var(--sp-2xl) auto 0;
+  text-align: left;
+}
+.vt-menu-details {
+  border: 1px solid rgba(200, 164, 93, 0.25);
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.vt-menu-details[open] {
+  border-color: rgba(200, 164, 93, 0.45);
+  background: rgba(0, 0, 0, 0.35);
+}
+.vt-menu-summary {
+  padding: 12px 16px;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--gold-light);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.vt-menu-summary::-webkit-details-marker {
+  display: none;
+}
+.vt-summary-arrow {
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+.vt-menu-details[open] .vt-summary-arrow {
+  transform: rotate(180deg);
+}
+.vt-menu-content {
+  padding: 0 16px 16px;
+  border-top: 1px solid rgba(200, 164, 93, 0.2);
 }
 
 .menu-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-lg);
-  margin-top: var(--sp-xl);
+  gap: var(--sp-md);
+  margin-top: var(--sp-md);
   text-align: left;
 }
 @media (min-width: 480px) {
@@ -1211,7 +1416,7 @@ a {
 }
 .menu-category {
   border-top: 1px solid rgba(200,164,93,0.3);
-  padding-top: var(--sp-sm);
+  padding-top: var(--sp-xs);
 }
 .menu-cat-label {
   font-family: var(--font-util);
@@ -1227,10 +1432,10 @@ a {
 }
 .menu-items li {
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--ivory);
-  opacity: 0.8;
-  line-height: 1.8;
+  opacity: 0.85;
+  line-height: 1.7;
 }
 
 /* Banana leaf ornament */
