@@ -412,12 +412,37 @@ a {
 
 /* ─── SCROLL-DRIVEN CINEMATIC VIDEO ─── */
 
-/* Outer scroll region — height set inline (e.g. 220vh, 280vh) */
+/* Responsive scroll heights: Fast mobile playback vs cinematic desktop pacing */
+:root {
+  --cinematic-hero-height: 180vh;
+  --cinematic-couple-height: 180vh;
+  --cinematic-celebrations-height: 180vh;
+  --cinematic-sacred-height: 200vh;
+  --cinematic-final-height: 160vh;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --cinematic-hero-height: 320vh;
+    --cinematic-couple-height: 320vh;
+    --cinematic-celebrations-height: 320vh;
+    --cinematic-sacred-height: 380vh;
+    --cinematic-final-height: 280vh;
+  }
+}
+
+/* Outer scroll region */
 .section.cinematic-scroll,
 .cinematic-scroll {
   position: relative;
   overflow: visible !important;
 }
+
+#hero.cinematic-scroll { height: var(--cinematic-hero-height); }
+#cinematic-two-stories.cinematic-scroll { height: var(--cinematic-couple-height); }
+#cinematic-celebrations.cinematic-scroll { height: var(--cinematic-celebrations-height); }
+#cinematic-sacred.cinematic-scroll { height: var(--cinematic-sacred-height); }
+#cinematic-final.cinematic-scroll { height: var(--cinematic-final-height); }
 
 /* Sticky viewport frame — remains fixed while section scrolls */
 .cinematic-sticky {
