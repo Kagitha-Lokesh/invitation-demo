@@ -135,7 +135,7 @@ const weddingDetails = {
     groom: "images/groomImage.jpeg",
     couple: "images/couple.jpeg",   // e.g. "images/couple.jpg"
     family: "",
-    venue: "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlWNb-RU0KlCfccvK4pABV55IxGDTxzGWwEbhMh84DXNeNjx1VQAlGfE8CHiAeW777BVxDibhECaNhI2Hd5jabb_mOSvqqAg6z08tPvc08JwZAqgS8JmN22vRr0HNfDKf04p20=w408-h306-k-no",
+    venue: "images/venue.jpeg",
     bhojanalu: ""
   },
 
@@ -216,7 +216,10 @@ function populateContent() {
   if (images.bride) loadPersonImage('bride-image-wrap', images.bride, bride.name + ' — Bride');
   if (images.groom) loadPersonImage('groom-image-wrap', images.groom, groom.name + ' — Groom');
   if (images.couple) loadPersonImage('couple-image-wrap', images.couple, bride.name + ' & ' + groom.name);
-  if (images.venue) loadVenueImage('map-preview', images.venue, wedding.venue);
+  if (images.venue) {
+    loadVenueImage('venue-image-wrap', images.venue, wedding.venue);
+    loadVenueImage('map-preview', images.venue, wedding.venue);
+  }
 
   // Families
   populateFamilies();
@@ -274,6 +277,12 @@ function loadPersonImage(wrapperId, src, alt) {
 function loadVenueImage(wrapperId, src, alt) {
   const wrap = document.getElementById(wrapperId);
   if (!wrap) return;
+  const existingImg = wrap.querySelector('img');
+  if (existingImg) {
+    existingImg.src = src;
+    existingImg.alt = alt || 'Wedding Venue';
+    return;
+  }
   const img = document.createElement('img');
   img.src = src;
   img.alt = alt || 'Wedding Venue';
@@ -281,7 +290,7 @@ function loadVenueImage(wrapperId, src, alt) {
   img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
   img.onerror = () => { };
   img.onload = () => {
-    const placeholder = wrap.querySelector('.map-preview-placeholder');
+    const placeholder = wrap.querySelector('.map-preview-placeholder, .person-image-placeholder');
     if (placeholder) placeholder.remove();
     wrap.appendChild(img);
   };
