@@ -674,48 +674,60 @@ function generateICSDownload() {
 }
 
 /* ============================================================
-   SCROLL-DRIVEN CINEMATIC VIDEO SCRUBBER  (performance edition)
-
-   WHY NO LERP:
-   Lerp creates a continuous rAF loop that competes with the
-   browser's own scroll compositing, causing exactly the jank
-   the user sees. The browser's scroll inertia already smooths
-   the input — adding lerp on top doubles the work.
-
-   WHY fastSeek():
-   video.fastSeek(t) is a browser API built for scrubbing.
-   It seeks to the nearest keyframe rather than an exact frame,
-   making it 3-5× cheaper than currentTime= which forces full
-   frame-accurate decode.
-
-   ONE rAF PER SCROLL:
-   A single requestAnimationFrame fires per scroll event —
-   not a continuous animation loop. This keeps the render
-   budget available for the browser's own scroll painting.
+   FRAME SEQUENCE CONFIGURATION (Phase 3 Engine)
    ============================================================ */
+const sequences = {
+  hero: {
+    path: "frames/hero/frame-{index}.webp",
+    frameCount: 120
+  },
+
+  couple: {
+    path: "frames/couple/frame-{index}.webp",
+    frameCount: 120
+  },
+
+  celebrations: {
+    path: "frames/celebrations/frame-{index}.webp",
+    frameCount: 120
+  },
+
+  wedding: {
+    path: "frames/wedding/frame-{index}.webp",
+    frameCount: 150
+  },
+
+  final: {
+    path: "frames/final/frame-{index}.webp",
+    frameCount: 150
+  }
+};
 
 /* ============================================================
-   FRAME SEQUENCE CINEMATIC SYSTEM (Phase 2 Canvas Engine)
+   FRAME-SEQUENCE CANVAS ENGINE (Phase 3 Architecture)
    ============================================================ */
-
 class FrameSequencePlayer {
-  constructor({ sectionId, canvasId, overlayId, folder, frameCount, chapters }) {
-    this.section = document.getElementById(sectionId);
-    this.canvas = document.getElementById(canvasId);
-    this.textOverlay = document.getElementById(overlayId);
+  constructor(section, canvas, textOverlay, sequenceConfig = {}) {
+    // Support either direct elements or ID strings
+    this.section = typeof section === 'string' ? document.getElementById(section) : section;
+    this.canvas = typeof canvas === 'string' ? document.getElementById(canvas) : canvas;
+    this.textOverlay = typeof textOverlay === 'string' ? document.getElementById(textOverlay) : textOverlay;
+
     if (!this.section || !this.canvas) return;
 
     this.ctx = this.canvas.getContext('2d', { alpha: false });
-    this.folder = folder;
-    this.frameCount = frameCount;
-    this.chapters = chapters || [];
+    this.pathPattern = sequenceConfig.path || "frames/hero/frame-{index}.webp";
+    this.frameCount = sequenceConfig.frameCount || 120;
+    this.chapters = sequenceConfig.chapters || [];
 
     this.images = new Map();
     this.loading = new Set();
     this.currentFrame = 1;
+    this.renderedFrame = 0;
+    this.lastValidImg = null;
     this.activeChapterIdx = -1;
     this.rafId = null;
-    this.inView = false;
+    this.isPrimed = false;
     this.canvasWidth = 0;
     this.canvasHeight = 0;
 
@@ -735,28 +747,38 @@ class FrameSequencePlayer {
       this._buildChapters();
     }
 
-    // Immediately load frame 1 for crisp visual on arrival
+    // Immediately load Frame 1 so canvas is never blank
     this._loadFrame(1, (img) => {
+      this.lastValidImg = img;
       this._drawCover(img);
+      this.renderedFrame = 1;
     });
 
+    // IntersectionObserver only for asset priming (200vh ahead)
     if (!isReduced()) {
-      // Preload first 25 frames
-      for (let i = 2; i <= Math.min(25, this.frameCount); i++) {
+      // Preload initial 30 frames
+      for (let i = 1; i <= Math.min(30, this.frameCount); i++) {
         this._loadFrame(i);
       }
 
-      // Approach observer: preload window when near viewport
-      const obs = new IntersectionObserver((entries) => {
-        this.inView = entries[0].isIntersecting;
-        if (this.inView) {
-          this._preloadWindow(this.currentFrame, 30);
-        }
-      }, { rootMargin: '120% 0px' });
-      obs.observe(this.section);
+      const primeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !this.isPrimed) {
+            this.isPrimed = true;
+            this._preloadWindow(this.currentFrame, 25);
+            primeObserver.disconnect();
+          }
+        });
+      }, { rootMargin: '200vh 0px' });
+      primeObserver.observe(this.section);
     }
 
     this._update();
+  }
+
+  _formatFrameUrl(index) {
+    const padded = String(index).padStart(4, '0');
+    return this.pathPattern.replace('{index}', padded);
   }
 
   _buildChapters() {
@@ -770,11 +792,6 @@ class FrameSequencePlayer {
     this._updateChapter(this._progress());
   }
 
-  _getFrameUrl(frameNum) {
-    const padded = String(frameNum).padStart(4, '0');
-    return `frames/${this.folder}/frame-${padded}.webp`;
-  }
-
   _loadFrame(frameNum, cb) {
     if (frameNum < 1 || frameNum > this.frameCount) return;
     if (this.images.has(frameNum)) {
@@ -785,18 +802,25 @@ class FrameSequencePlayer {
 
     this.loading.add(frameNum);
     const img = new Image();
-    img.src = this._getFrameUrl(frameNum);
-    img.onload = () => {
+    img.src = this._formatFrameUrl(frameNum);
+
+    const onComplete = () => {
       this.images.set(frameNum, img);
       this.loading.delete(frameNum);
       if (cb) cb(img);
       if (this.currentFrame === frameNum) {
+        this.lastValidImg = img;
         this._drawCover(img);
+        this.renderedFrame = frameNum;
       }
     };
-    img.onerror = () => {
-      this.loading.delete(frameNum);
-    };
+
+    if (typeof img.decode === 'function') {
+      img.decode().then(onComplete).catch(onComplete);
+    } else {
+      img.onload = onComplete;
+      img.onerror = () => { this.loading.delete(frameNum); };
+    }
   }
 
   _preloadWindow(centerIdx, radius = 20) {
@@ -805,7 +829,7 @@ class FrameSequencePlayer {
     for (let i = min; i <= max; i++) {
       this._loadFrame(i);
     }
-    // Idle background load for all remaining frames
+    // Background idle queue for remaining frames
     if (typeof window.requestIdleCallback === 'function') {
       window.requestIdleCallback(() => {
         for (let i = 1; i <= this.frameCount; i++) {
@@ -813,7 +837,7 @@ class FrameSequencePlayer {
             this._loadFrame(i);
           }
         }
-      }, { timeout: 2000 });
+      }, { timeout: 2500 });
     }
   }
 
@@ -828,15 +852,17 @@ class FrameSequencePlayer {
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
 
-    const img = this.images.get(this.currentFrame) || this.images.get(1);
-    if (img) this._drawCover(img);
+    const imgToDraw = this.images.get(this.currentFrame) || this.lastValidImg || this.images.get(1);
+    if (imgToDraw) {
+      this._drawCover(imgToDraw);
+    }
   }
 
   _progress() {
     const rect = this.section.getBoundingClientRect();
-    const scrolled = -rect.top;
-    const total = Math.max(1, this.section.offsetHeight - window.innerHeight);
-    return Math.max(0, Math.min(1, scrolled / total));
+    const scrollDistance = this.section.offsetHeight - window.innerHeight;
+    if (scrollDistance <= 0) return 0;
+    return Math.min(Math.max(-rect.top / scrollDistance, 0), 1);
   }
 
   _onScroll() {
@@ -856,30 +882,28 @@ class FrameSequencePlayer {
       Math.max(1, Math.round(progress * (this.frameCount - 1)) + 1)
     );
 
-    if (targetFrame !== this.currentFrame) {
-      this.currentFrame = targetFrame;
+    this.currentFrame = targetFrame;
+
+    if (targetFrame !== this.renderedFrame) {
       const img = this.images.get(targetFrame);
       if (img) {
         this._drawCover(img);
+        this.lastValidImg = img;
+        this.renderedFrame = targetFrame;
       } else {
+        // Requested frame is still loading — KEEP PREVIOUS VALID FRAME (never blank/clear canvas)
+        if (this.lastValidImg) {
+          this._drawCover(this.lastValidImg);
+        }
         this._loadFrame(targetFrame, (loadedImg) => {
           if (this.currentFrame === targetFrame) {
             this._drawCover(loadedImg);
+            this.lastValidImg = loadedImg;
+            this.renderedFrame = targetFrame;
           }
         });
-        // Nearest frame fallback while loading to avoid any blank frame
-        let closest = null;
-        let minDiff = Infinity;
-        for (const [fn, fImg] of this.images.entries()) {
-          const diff = Math.abs(fn - targetFrame);
-          if (diff < minDiff) {
-            minDiff = diff;
-            closest = fImg;
-          }
-        }
-        if (closest) this._drawCover(closest);
       }
-      this._preloadWindow(targetFrame, 18);
+      this._preloadWindow(targetFrame, 20);
     }
 
     this._updateChapter(progress);
@@ -939,20 +963,125 @@ class FrameSequencePlayer {
 
     ctx.drawImage(img, ox, oy, rw, rh);
   }
+
+  destroy() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('scroll', this._onScroll);
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+  }
 }
 
-/* ─── Init all 5 cinematic frame-sequence players ─── */
+/* ============================================================
+   SCROLL ANIMATION CONTROLLER (Phase 3 Unified Architecture)
+   ============================================================ */
+class ScrollAnimationController {
+  constructor() {
+    this.scrollY = window.scrollY;
+    this.lastScrollY = window.scrollY;
+    this.lastTimestamp = performance.now();
+    this.velocity = 0;
+    this.direction = 'stopped';
+    this.globalProgress = 0;
+    this.rafId = null;
+
+    this._onScroll = this._onScroll.bind(this);
+    this._init();
+  }
+
+  _init() {
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._initRevealObserver();
+  }
+
+  _onScroll() {
+    if (this.rafId === null) {
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = null;
+        this._tick();
+      });
+    }
+  }
+
+  _tick() {
+    const now = performance.now();
+    const dt = Math.max(1, now - this.lastTimestamp);
+    this.scrollY = window.scrollY;
+
+    const dy = this.scrollY - this.lastScrollY;
+    this.velocity = Math.abs(dy) / dt;
+    this.direction = dy > 0 ? 'down' : (dy < 0 ? 'up' : 'stopped');
+
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    this.globalProgress = Math.min(Math.max(this.scrollY / maxScroll, 0), 1);
+
+    this.lastScrollY = this.scrollY;
+    this.lastTimestamp = now;
+
+    // Fast scroll adaptation: prioritize canvas frames when velocity > 2.5
+    if (this.velocity < 3.0 && !isReduced()) {
+      this._updateScrollDrivenDrawings();
+    }
+  }
+
+  _updateScrollDrivenDrawings() {
+    // 1. Muggu Progressive Drawing linked to Section 02 scroll progress
+    const familySection = document.getElementById('family-blessings');
+    if (familySection) {
+      const rect = familySection.getBoundingClientRect();
+      const visibleHeight = window.innerHeight;
+      const progress = Math.min(Math.max((visibleHeight - rect.top) / (rect.height + visibleHeight * 0.4), 0), 1);
+      const mugguPaths = $$('.muggu-path');
+      mugguPaths.forEach((path, i) => {
+        const offset = Math.max(0, 500 * (1 - progress * 1.3));
+        path.style.strokeDashoffset = String(offset);
+      });
+    }
+
+    // 2. Timeline spine progress drawing linked to Section 05
+    const celebrationsSection = document.getElementById('celebrations');
+    const timelineLine = document.getElementById('timeline-line');
+    if (celebrationsSection && timelineLine) {
+      const rect = celebrationsSection.getBoundingClientRect();
+      const progress = Math.min(Math.max((window.innerHeight - rect.top) / (rect.height + window.innerHeight * 0.2), 0), 1);
+      timelineLine.style.transform = `scaleY(${Math.min(1, progress * 1.25)})`;
+    }
+  }
+
+  _initRevealObserver() {
+    if (isReduced()) {
+      $$('.scroll-reveal').forEach(el => el.classList.add('revealed'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    $$('.scroll-reveal').forEach(el => observer.observe(el));
+    $$('.timeline-event').forEach(el => observer.observe(el));
+  }
+}
+
+/* ─── Initialize All 5 Cinematic Frame-Sequence Players ─── */
 function initCinematicSequences() {
   const { bride, groom, wedding } = weddingDetails;
 
-  const sequenceConfigs = [
+  const playerConfigs = [
     // 01 — HERO
     {
-      sectionId: 'hero',
-      canvasId: 'canvas-hero',
-      overlayId: 'cto-hero',
-      folder: 'hero',
-      frameCount: 120,
+      section: 'hero',
+      canvas: 'canvas-hero',
+      textOverlay: 'cto-hero',
+      path: sequences.hero.path,
+      frameCount: sequences.hero.frameCount,
       chapters: [
         {
           from: 0.00, to: 0.20,
@@ -985,11 +1114,11 @@ function initCinematicSequences() {
 
     // 02 — COUPLE / TWO STORIES
     {
-      sectionId: 'cinematic-two-stories',
-      canvasId: 'canvas-couple',
-      overlayId: 'cto-couple',
-      folder: 'couple',
-      frameCount: 120,
+      section: 'cinematic-two-stories',
+      canvas: 'canvas-couple',
+      textOverlay: 'cto-couple',
+      path: sequences.couple.path,
+      frameCount: sequences.couple.frameCount,
       chapters: [
         {
           from: 0.00, to: 0.25,
@@ -1022,11 +1151,11 @@ function initCinematicSequences() {
 
     // 03 — CELEBRATIONS
     {
-      sectionId: 'cinematic-celebrations',
-      canvasId: 'canvas-celebrations',
-      overlayId: 'cto-celebrations',
-      folder: 'celebrations',
-      frameCount: 120,
+      section: 'cinematic-celebrations',
+      canvas: 'canvas-celebrations',
+      textOverlay: 'cto-celebrations',
+      path: sequences.celebrations.path,
+      frameCount: sequences.celebrations.frameCount,
       chapters: [
         {
           from: 0.00, to: 0.25,
@@ -1065,11 +1194,11 @@ function initCinematicSequences() {
 
     // 04 — WEDDING / SACRED BEGINNING (Climax)
     {
-      sectionId: 'cinematic-sacred',
-      canvasId: 'canvas-wedding',
-      overlayId: 'cto-wedding',
-      folder: 'wedding',
-      frameCount: 150,
+      section: 'cinematic-sacred',
+      canvas: 'canvas-wedding',
+      textOverlay: 'cto-wedding',
+      path: sequences.wedding.path,
+      frameCount: sequences.wedding.frameCount,
       chapters: [
         {
           from: 0.00, to: 0.20,
@@ -1107,11 +1236,11 @@ function initCinematicSequences() {
 
     // 05 — FINAL / WITH LOVE
     {
-      sectionId: 'cinematic-final',
-      canvasId: 'canvas-final',
-      overlayId: 'cto-final',
-      folder: 'final',
-      frameCount: 150,
+      section: 'cinematic-final',
+      canvas: 'canvas-final',
+      textOverlay: 'cto-final',
+      path: sequences.final.path,
+      frameCount: sequences.final.frameCount,
       chapters: [
         {
           from: 0.00, to: 0.35,
@@ -1142,79 +1271,9 @@ function initCinematicSequences() {
     }
   ];
 
-  window.cinematicPlayers = sequenceConfigs.map(cfg => new FrameSequencePlayer(cfg));
-}
-
-/* ============================================================
-   SCROLL ANIMATIONS
-   ============================================================ */
-function initScrollAnimations() {
-  if (isReduced()) {
-    // Immediately reveal all elements
-    $$('.scroll-reveal').forEach(el => el.classList.add('revealed'));
-    return;
-  }
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('revealed');
-        // Don't keep observing once revealed
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.12,
-    rootMargin: '0px 0px -40px 0px'
-  });
-
-  $$('.scroll-reveal').forEach(el => observer.observe(el));
-
-  // Timeline line draw
-  const timelineLine = document.getElementById('timeline-line');
-  if (timelineLine) {
-    const tlObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('drawn');
-          tlObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    tlObserver.observe(timelineLine);
-  }
-
-  // Timeline event items
-  const tlObserver2 = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('revealed');
-        tlObserver2.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2, rootMargin: '0px 0px -20px 0px' });
-
-  $$('.timeline-event').forEach(el => tlObserver2.observe(el));
-
-  // Muggu path animation
-  const mugguPaths = $$('.muggu-path');
-  if (mugguPaths.length > 0 && !isReduced()) {
-    const mugguObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          mugguPaths.forEach((path, i) => {
-            setTimeout(() => {
-              path.style.transition = `stroke-dashoffset ${1.2 + i * 0.4}s cubic-bezier(0.22,1,0.36,1)`;
-              path.style.strokeDashoffset = '0';
-            }, 300 + i * 200);
-          });
-          mugguObserver.disconnect();
-        }
-      });
-    }, { threshold: 0.3 });
-    const mugguSvg = document.getElementById('muggu-svg');
-    if (mugguSvg) mugguObserver.observe(mugguSvg);
-  }
+  window.cinematicPlayers = playerConfigs.map(cfg =>
+    new FrameSequencePlayer(cfg.section, cfg.canvas, cfg.textOverlay, cfg)
+  );
 }
 
 /* ============================================================
@@ -1227,7 +1286,7 @@ const CHAPTERS = [
   'Their Journey',
   'Celebrations',
   'A Day to Remember',
-  'Wedding Day',
+  'Venue & Timings',
   'Sacred Beginning',
   'Join Us',
   'With Love'
@@ -1239,7 +1298,7 @@ function initChapterIndicator() {
   const dotsContainer = document.getElementById('chapter-dots');
   if (!dotsContainer) return;
 
-  // Build dots
+  dotsContainer.innerHTML = '';
   CHAPTERS.forEach((name, i) => {
     const dot = document.createElement('button');
     dot.className = 'chapter-dot';
@@ -1251,23 +1310,12 @@ function initChapterIndicator() {
 
   updateChapterDots(0);
 
-  // Observe sections
   const sections = $$('[data-chapter]');
-  const sectionChapters = new Map();
-
-  // Map unique chapter numbers to first occurrence
-  sections.forEach(sec => {
-    const ch = parseInt(sec.dataset.chapter, 10) - 1;
-    if (!sectionChapters.has(ch)) {
-      sectionChapters.set(ch, sec);
-    }
-  });
-
   const chapterObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
         const ch = parseInt(entry.target.dataset.chapter, 10) - 1;
-        if (ch !== currentChapter) {
+        if (ch !== currentChapter && ch >= 0 && ch < CHAPTERS.length) {
           currentChapter = ch;
           updateChapterDots(ch);
         }
@@ -1286,7 +1334,6 @@ function updateChapterDots(activeIdx) {
 
 function scrollToChapter(idx) {
   const sections = $$('[data-chapter]');
-  // Find the first section with this chapter number
   const target = sections.find(s => parseInt(s.dataset.chapter, 10) - 1 === idx);
   if (target) {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1328,7 +1375,6 @@ function initMusic() {
           control.setAttribute('aria-label', 'Pause background music');
         })
         .catch(() => {
-          // Autoplay blocked — user must interact first, which they just did
           audio.play().then(() => {
             playing = true;
             iconPlay.style.display = 'none';
@@ -1340,12 +1386,12 @@ function initMusic() {
 }
 
 /* ============================================================
-   INIT
+   INITIALIZATION
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   populateContent();
-  initScrollAnimations();
+  window.scrollAnimationController = new ScrollAnimationController();
   initChapterIndicator();
-  initCinematicSequences(); // Frame-sequence canvas scrubber for all 5 sequences
+  initCinematicSequences();
   initMusic();
 });
