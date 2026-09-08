@@ -30,58 +30,14 @@
   </button>
 
   <!-- ============================================================
-       SECTION 01 — HERO
-       Scroll-driven: 250vh section, video scrubs with scroll
+       SECTION 01 — HERO (Scroll-driven frame sequence 300vh)
        ============================================================ -->
-  <section id="hero" class="section cinematic-scroll" data-chapter="1" data-chapter-name="Invitation" style="height: 250vh">
-
+  <section id="hero" class="section cinematic-scroll" data-chapter="1" data-chapter-name="Invitation" style="height: 350vh">
     <div class="cinematic-sticky">
-
-      <!-- Portrait cinematic video — currentTime driven by scroll -->
-      <div class="cinematic-frame">
-        <video
-          id="video-hero"
-          class="cinematic-main-video"
-          src="hero.mp4"
-          muted
-          playsinline
-          preload="auto"
-          aria-hidden="true"
-          tabindex="-1"
-        ></video>
-      </div>
-
-      <!-- Gradient overlays -->
-      <div class="hero-overlay-top"  aria-hidden="true"></div>
-      <div class="hero-overlay-bottom" aria-hidden="true"></div>
-
-      <!-- Overlay text -->
-      <div class="hero-content">
-        <span class="hero-eyebrow scroll-reveal">
-          WITH THE BLESSINGS<br>OF OUR FAMILIES
-        </span>
-        <div class="hero-names">
-          <span class="hero-bride-name scroll-reveal delay-1" id="hero-bride-name">BRIDE NAME</span>
-          <span class="hero-ampersand scroll-reveal delay-2">&amp;</span>
-          <span class="hero-groom-name scroll-reveal delay-3" id="hero-groom-name">GROOM NAME</span>
-        </div>
-        <p class="hero-tagline scroll-reveal delay-4">
-          invite you to celebrate their wedding
-        </p>
-        <div class="hero-scroll scroll-reveal delay-5" aria-hidden="true">
-          <span class="hero-scroll-text">Scroll to reveal</span>
-          <svg class="hero-scroll-arrow" xmlns="http://www.w3.org/2000/svg"
-            width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Fade into Section 02 -->
-      <div class="hero-transition" aria-hidden="true"></div>
-
+      <canvas class="cinematic-canvas" id="canvas-hero" aria-hidden="true"></canvas>
+      <div class="cinematic-scrim cinematic-scrim--top" aria-hidden="true"></div>
+      <div class="cinematic-scrim cinematic-scrim--bottom" aria-hidden="true"></div>
+      <div class="cinematic-text-overlay" id="cto-hero" aria-live="polite"></div>
     </div>
   </section>
 
@@ -290,56 +246,14 @@
   <div class="transition-band ivory-to-cream" aria-hidden="true"></div>
 
   <!-- ============================================================
-       SECTION 04 — TWO STORIES, ONE JOURNEY
+       SECTION 04 — TWO STORIES, ONE JOURNEY (Cinematic Sequence 300vh)
        ============================================================ -->
-  <section id="two-stories" class="section" data-chapter="4" data-chapter-name="Their Journey">
-
-    <div class="two-stories-inner">
-      <span class="section-eyebrow t-center scroll-reveal">A shared beginning</span>
-      <h2 class="section-title t-center scroll-reveal delay-1">
-        Two Stories,<br>One Journey
-      </h2>
-
-      <div class="ornament-divider scroll-reveal delay-2" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
-        </svg>
-      </div>
-
-      <p class="two-stories-intro scroll-reveal delay-3">
-        Two families, two worlds, one beautiful beginning.
-        Bound together by love, tradition, and the blessings of those who came before.
-      </p>
-    </div>
-
-    <!-- Scroll-driven couple video (220vh scrub range) -->
-    <div class="cinematic-scroll" id="cinematic-two-stories" style="height: 220vh">
-      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
-        <div class="cinematic-frame">
-          <video
-            id="video-couple"
-            class="cinematic-main-video"
-            src="couple.mp4"
-            muted
-            playsinline
-            preload="none"
-            aria-label="Cinematic video: Two Stories, One Journey"
-          ></video>
-        </div>
-      </div>
-    </div>
-
-    <!-- After video quote -->
-    <div class="two-stories-quote">
-      <svg class="toranam-motif scroll-reveal" style="max-width:200px; margin:0 auto var(--sp-lg);" viewBox="0 0 340 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M 161 30 Q 140 18 120 28 Q 100 38 80 26 Q 60 14 40 25 Q 20 35 5 28" stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/>
-        <path d="M 179 30 Q 200 18 220 28 Q 240 38 260 26 Q 280 14 300 25 Q 320 35 335 28" stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/>
-        <circle cx="170" cy="30" r="5" fill="currentColor" opacity="0.6"/>
-      </svg>
-
-      <blockquote class="story-quote-text scroll-reveal">
-        "And so, two journeys<br>became one."
-      </blockquote>
+  <section class="section cinematic-scroll" id="cinematic-two-stories" data-chapter="4" data-chapter-name="Their Journey" style="height: 350vh">
+    <div class="cinematic-sticky">
+      <canvas class="cinematic-canvas" id="canvas-couple" aria-hidden="true"></canvas>
+      <div class="cinematic-scrim cinematic-scrim--top" aria-hidden="true"></div>
+      <div class="cinematic-scrim cinematic-scrim--bottom" aria-hidden="true"></div>
+      <div class="cinematic-text-overlay" id="cto-couple" aria-live="polite"></div>
     </div>
   </section>
 
@@ -372,47 +286,15 @@
   <div class="transition-band cream-to-maroon" aria-hidden="true"></div>
 
   <!-- ============================================================
-       SECTION 06 — A DAY TO REMEMBER
+       SECTION 06 — A DAY TO REMEMBER / CELEBRATIONS (Cinematic 300vh)
        ============================================================ -->
-  <section id="day-to-remember" class="section" data-chapter="6" data-chapter-name="A Day to Remember">
-
-    <div class="day-remember-header">
-      <span class="section-eyebrow scroll-reveal">Celebrating together</span>
-      <h2 class="section-title scroll-reveal delay-1" style="color:var(--ivory)">
-        A Day to Remember
-      </h2>
+  <section class="section cinematic-scroll" id="cinematic-celebrations" data-chapter="6" data-chapter-name="A Day to Remember" style="height: 350vh">
+    <div class="cinematic-sticky">
+      <canvas class="cinematic-canvas" id="canvas-celebrations" aria-hidden="true"></canvas>
+      <div class="cinematic-scrim cinematic-scrim--top" aria-hidden="true"></div>
+      <div class="cinematic-scrim cinematic-scrim--bottom" aria-hidden="true"></div>
+      <div class="cinematic-text-overlay" id="cto-celebrations" aria-live="polite"></div>
     </div>
-
-    <!-- Scroll-driven celebrations video (200vh scrub range) -->
-    <div class="cinematic-scroll" id="cinematic-celebrations" style="height: 200vh">
-      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
-        <div class="cinematic-frame">
-          <video
-            id="video-celebrations"
-            class="cinematic-main-video"
-            src="celebrations.mp4"
-            muted
-            playsinline
-            preload="none"
-            aria-label="Cinematic video: A Day to Remember"
-          ></video>
-        </div>
-      </div>
-    </div>
-
-    <div class="day-remember-message">
-      <div class="ornament-divider scroll-reveal" style="max-width:200px; margin:0 auto var(--sp-lg);" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
-        </svg>
-      </div>
-      <p class="scroll-reveal delay-1">
-        From the aroma of jasmine to the warmth of turmeric,
-        every ritual carries the love of generations past
-        and the joy of the journey ahead.
-      </p>
-    </div>
-
   </section>
 
   <!-- ============================================================
@@ -547,46 +429,15 @@
   </section>
 
   <!-- ============================================================
-       SECTION 08 — THE SACRED BEGINNING
+       SECTION 08 — THE SACRED BEGINNING (Climax Sequence 360vh)
        ============================================================ -->
-  <section id="sacred-beginning" class="section" data-chapter="8" data-chapter-name="Sacred Beginning">
-
-    <div class="sacred-header">
-      <span class="section-eyebrow t-center scroll-reveal">The divine union</span>
-      <h2 class="section-title t-center scroll-reveal delay-1">The Sacred Beginning</h2>
-      <p class="sacred-tel-subtitle t-center scroll-reveal delay-2">
-        మంగళకరమైన ఆరంభం
-      </p>
+  <section class="section cinematic-scroll" id="cinematic-sacred" data-chapter="8" data-chapter-name="Sacred Beginning" style="height: 420vh">
+    <div class="cinematic-sticky">
+      <canvas class="cinematic-canvas" id="canvas-wedding" aria-hidden="true"></canvas>
+      <div class="cinematic-scrim cinematic-scrim--top" aria-hidden="true"></div>
+      <div class="cinematic-scrim cinematic-scrim--bottom" aria-hidden="true"></div>
+      <div class="cinematic-text-overlay" id="cto-wedding" aria-live="polite"></div>
     </div>
-
-    <!-- Scroll-driven wedding video (280vh — the climax, given the most range) -->
-    <div class="cinematic-scroll" id="cinematic-sacred" style="height: 280vh">
-      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
-        <div class="cinematic-frame">
-          <video
-            id="video-wedding"
-            class="cinematic-main-video"
-            src="wedding.mp4"
-            muted
-            playsinline
-            preload="none"
-            aria-label="Cinematic video: The Sacred Beginning — wedding ceremony"
-          ></video>
-        </div>
-      </div>
-    </div>
-
-    <div class="sacred-after">
-      <div class="ornament-divider scroll-reveal" style="max-width:200px; margin:0 auto var(--sp-lg);" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-          <path d="M7 0 L8.5 5.5 L14 7 L8.5 8.5 L7 14 L5.5 8.5 L0 7 L5.5 5.5 Z"/>
-        </svg>
-      </div>
-      <p class="sacred-vow-text scroll-reveal">
-        With sacred vows,<br>a beautiful new chapter begins.
-      </p>
-    </div>
-
   </section>
 
   <div class="transition-band ivory-to-maroon" aria-hidden="true"></div>
@@ -746,50 +597,20 @@
   <div class="transition-band maroon-to-ivory" aria-hidden="true"></div>
 
   <!-- ============================================================
-       SECTION 10 — WITH LOVE
+       SECTION 10 — WITH LOVE (Final Closing Sequence 300vh)
        ============================================================ -->
-  <section id="with-love" class="section" data-chapter="10" data-chapter-name="With Love">
-
-    <div class="with-love-header">
-      <span class="section-eyebrow t-center scroll-reveal" style="color:var(--gold-light)">
-        With love, always
-      </span>
-      <h2 class="section-title t-center scroll-reveal delay-1" style="color:var(--ivory)">
-        With Love
-      </h2>
-
-      <div class="with-love-names scroll-reveal delay-2">
-        <span class="with-love-bride" id="closing-bride">BRIDE NAME</span>
-        <span class="with-love-amp">&amp;</span>
-        <span class="with-love-groom" id="closing-groom">GROOM NAME</span>
-      </div>
-
-      <p class="with-love-tagline scroll-reveal delay-3">
-        Thank you for being part of our beginning.
-      </p>
+  <section class="section cinematic-scroll" id="cinematic-final" data-chapter="10" data-chapter-name="With Love" style="height: 350vh">
+    <div class="cinematic-sticky">
+      <canvas class="cinematic-canvas" id="canvas-final" aria-hidden="true"></canvas>
+      <div class="cinematic-scrim cinematic-scrim--top" aria-hidden="true"></div>
+      <div class="cinematic-scrim cinematic-scrim--bottom" aria-hidden="true"></div>
+      <div class="cinematic-text-overlay" id="cto-final" aria-live="polite"></div>
     </div>
+  </section>
 
-    <!-- Scroll-driven final invitation video (250vh scrub range) -->
-    <div class="cinematic-scroll" id="cinematic-final" style="height: 250vh">
-      <div class="cinematic-sticky" style="background:var(--maroon-dark)">
-        <div class="cinematic-frame">
-          <video
-            id="video-final"
-            class="cinematic-main-video"
-            src="finalinvitation.mp4"
-            muted
-            playsinline
-            preload="none"
-            aria-label="Final cinematic closing: With Love"
-          ></video>
-        </div>
-      </div>
-    </div>
-
-    <!-- Closing blessing -->
+  <!-- Final Blessing Footer Section -->
+  <section id="closing-blessing-section" class="section" style="background:var(--maroon-dark); color:var(--ivory); padding:var(--sp-3xl) var(--sp-lg) var(--sp-2xl);">
     <div class="closing-blessing">
-
-      <!-- Final diya -->
       <div class="closing-diya scroll-reveal" aria-hidden="true">
         <div class="diya-wrap" style="display:inline-flex; flex-direction:column; align-items:center; gap:2px;">
           <div class="diya-flame" style="width:10px; height:20px;"></div>
@@ -811,12 +632,9 @@
       <span class="blessing-tel scroll-reveal delay-2">శుభమస్తు</span>
       <span class="blessing-sub scroll-reveal delay-3">May it be auspicious</span>
 
-      <!-- Family names footer -->
       <div id="families-footer" class="scroll-reveal delay-4"
         style="margin-top:var(--sp-xl); font-family:var(--font-body); font-style:italic; color:var(--warm-brass); font-size:var(--text-sm); line-height:2.2;">
-        <!-- Injected by JS -->
       </div>
-
     </div>
   </section>
 

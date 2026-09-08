@@ -586,169 +586,475 @@ function generateICSDownload() {
 }
 
 /* ============================================================
-   SCROLL-DRIVEN CINEMATIC VIDEO SCRUBBER
-   — Scroll position → video.currentTime
-   — IntersectionObserver is used for lazy-loading ONLY
-   — video.play() is NEVER called for cinematic playback
+   SCROLL-DRIVEN CINEMATIC VIDEO SCRUBBER  (performance edition)
+
+   WHY NO LERP:
+   Lerp creates a continuous rAF loop that competes with the
+   browser's own scroll compositing, causing exactly the jank
+   the user sees. The browser's scroll inertia already smooths
+   the input — adding lerp on top doubles the work.
+
+   WHY fastSeek():
+   video.fastSeek(t) is a browser API built for scrubbing.
+   It seeks to the nearest keyframe rather than an exact frame,
+   making it 3-5× cheaper than currentTime= which forces full
+   frame-accurate decode.
+
+   ONE rAF PER SCROLL:
+   A single requestAnimationFrame fires per scroll event —
+   not a continuous animation loop. This keeps the render
+   budget available for the browser's own scroll painting.
    ============================================================ */
 
-class ScrollVideoScrubber {
-  /**
-   * @param {HTMLElement} section   — the cinematic-scroll container (tall div)
-   * @param {HTMLVideoElement} video — the video whose currentTime we control
-   * @param {object} [opts]
-   * @param {number} [opts.lerpFactor=0.12]  — smoothing (0 = no smoothing, 1 = instant)
-   */
-  constructor(section, video, opts = {}) {
-    this.section      = section;
-    this.video        = video;
-    this.duration     = 0;
-    this.targetTime   = 0;
-    this.smoothTime   = 0;
-    this.rafId        = null;
-    this.isReady      = false;
-    this.lerpFactor   = opts.lerpFactor ?? 0.12;
-    this.lastSeeked   = -1;
-    // Minimum time delta before we bother calling currentTime= (≈1 frame at 30fps)
-    this.SEEK_EPSILON  = 1 / 30;
+/* ============================================================
+   FRAME SEQUENCE CINEMATIC SYSTEM (Phase 2 Canvas Engine)
+   ============================================================ */
 
-    this._scrollBound = this._onScroll.bind(this);
+class FrameSequencePlayer {
+  constructor({ sectionId, canvasId, overlayId, folder, frameCount, chapters }) {
+    this.section = document.getElementById(sectionId);
+    this.canvas = document.getElementById(canvasId);
+    this.textOverlay = document.getElementById(overlayId);
+    if (!this.section || !this.canvas) return;
+
+    this.ctx = this.canvas.getContext('2d', { alpha: false });
+    this.folder = folder;
+    this.frameCount = frameCount;
+    this.chapters = chapters || [];
+
+    this.images = new Map();
+    this.loading = new Set();
+    this.currentFrame = 1;
+    this.activeChapterIdx = -1;
+    this.rafId = null;
+    this.inView = false;
+    this.canvasWidth = 0;
+    this.canvasHeight = 0;
+
+    this._onScroll = this._onScroll.bind(this);
+    this._onResize = this._onResize.bind(this);
+
     this._init();
   }
 
   _init() {
-    const { video, section } = this;
+    this._onResize();
+    window.addEventListener('resize', this._onResize, { passive: true });
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    window.addEventListener('load', this._onResize, { once: true });
 
-    // — Metadata: get duration so we can map progress → seconds —
-    if (video.readyState >= 1) {
-      this._onMetadata();
-    } else {
-      video.addEventListener('loadedmetadata', () => this._onMetadata(), { once: true });
+    if (this.textOverlay && this.chapters.length > 0) {
+      this._buildChapters();
     }
 
-    // — Lazy-load: upgrade preload when section is near viewport —
-    // rootMargin '150%' means start loading when section is 1.5 viewports away
-    const loader = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        if (video.preload !== 'auto') video.preload = 'auto';
-        loader.disconnect();
+    // Immediately load frame 1 for crisp visual on arrival
+    this._loadFrame(1, (img) => {
+      this._drawCover(img);
+    });
+
+    if (!isReduced()) {
+      // Preload first 25 frames
+      for (let i = 2; i <= Math.min(25, this.frameCount); i++) {
+        this._loadFrame(i);
       }
-    }, { rootMargin: '150% 0px' });
-    loader.observe(section);
 
-    // — Scroll listener —
-    window.addEventListener('scroll', this._scrollBound, { passive: true });
+      // Approach observer: preload window when near viewport
+      const obs = new IntersectionObserver((entries) => {
+        this.inView = entries[0].isIntersecting;
+        if (this.inView) {
+          this._preloadWindow(this.currentFrame, 30);
+        }
+      }, { rootMargin: '120% 0px' });
+      obs.observe(this.section);
+    }
 
-    // Initial position (in case page loads mid-scroll)
-    this._onScroll();
+    this._update();
   }
 
-  _onMetadata() {
-    this.duration = this.video.duration;
-    this.isReady  = true;
-    // Immediately snap to the scroll-correct position
-    const p = this._progress();
-    const t = p * this.duration;
-    this.smoothTime = t;
-    this.targetTime = t;
-    this._seekTo(t);
+  _buildChapters() {
+    this.textOverlay.innerHTML = this.chapters.map((ch, idx) => `
+      <div class="cto-chapter" id="${this.section.id}-ch-${idx}" data-idx="${idx}">
+        ${ch.html}
+      </div>
+    `).join('');
+    this.chapterEls = Array.from(this.textOverlay.querySelectorAll('.cto-chapter'));
+    this.activeChapterIdx = -1;
+    this._updateChapter(this._progress());
   }
 
-  // Fractional scroll progress [0, 1] through this section
+  _getFrameUrl(frameNum) {
+    const padded = String(frameNum).padStart(4, '0');
+    return `frames/${this.folder}/frame-${padded}.webp`;
+  }
+
+  _loadFrame(frameNum, cb) {
+    if (frameNum < 1 || frameNum > this.frameCount) return;
+    if (this.images.has(frameNum)) {
+      if (cb) cb(this.images.get(frameNum));
+      return;
+    }
+    if (this.loading.has(frameNum)) return;
+
+    this.loading.add(frameNum);
+    const img = new Image();
+    img.src = this._getFrameUrl(frameNum);
+    img.onload = () => {
+      this.images.set(frameNum, img);
+      this.loading.delete(frameNum);
+      if (cb) cb(img);
+      if (this.currentFrame === frameNum) {
+        this._drawCover(img);
+      }
+    };
+    img.onerror = () => {
+      this.loading.delete(frameNum);
+    };
+  }
+
+  _preloadWindow(centerIdx, radius = 20) {
+    const min = Math.max(1, centerIdx - radius);
+    const max = Math.min(this.frameCount, centerIdx + radius);
+    for (let i = min; i <= max; i++) {
+      this._loadFrame(i);
+    }
+    // Idle background load for all remaining frames
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(() => {
+        for (let i = 1; i <= this.frameCount; i++) {
+          if (!this.images.has(i) && !this.loading.has(i)) {
+            this._loadFrame(i);
+          }
+        }
+      }, { timeout: 2000 });
+    }
+  }
+
+  _onResize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = this.canvas.getBoundingClientRect();
+    const w = rect.width || window.innerWidth;
+    const h = rect.height || window.innerHeight;
+
+    this.canvas.width = Math.round(w * dpr);
+    this.canvas.height = Math.round(h * dpr);
+    this.canvasWidth = this.canvas.width;
+    this.canvasHeight = this.canvas.height;
+
+    const img = this.images.get(this.currentFrame) || this.images.get(1);
+    if (img) this._drawCover(img);
+  }
+
   _progress() {
     const rect = this.section.getBoundingClientRect();
-    const sH   = this.section.offsetHeight;
-    const vH   = window.innerHeight;
-    // scrolled = how many px of the section have passed the top of the viewport
     const scrolled = -rect.top;
-    const total    = Math.max(1, sH - vH);
+    const total = Math.max(1, this.section.offsetHeight - window.innerHeight);
     return Math.max(0, Math.min(1, scrolled / total));
   }
 
   _onScroll() {
-    if (!this.isReady) return;
-    this.targetTime = this._progress() * this.duration;
-    this._scheduleRaf();
-  }
-
-  _scheduleRaf() {
-    if (this.rafId !== null) return;          // already scheduled
-    this.rafId = requestAnimationFrame(() => {
-      this.rafId = null;
-      this._step();
-    });
-  }
-
-  _step() {
-    const delta = this.targetTime - this.smoothTime;
-
-    if (Math.abs(delta) < 0.002) {
-      // Converged — snap and stop rAF loop
-      this.smoothTime = this.targetTime;
-      this._seekTo(this.smoothTime);
-      return;
-    }
-
-    // Lerp toward target
-    this.smoothTime += delta * this.lerpFactor;
-    this._seekTo(this.smoothTime);
-
-    // Continue until converged
-    this.rafId = requestAnimationFrame(() => {
-      this.rafId = null;
-      this._step();
-    });
-  }
-
-  _seekTo(t) {
-    // Skip redundant seeks
-    if (Math.abs(t - this.lastSeeked) < this.SEEK_EPSILON) return;
-    try {
-      this.video.currentTime = t;
-      this.lastSeeked = t;
-    } catch (_) {
-      // Video not ready yet — silently ignore
+    if (isReduced()) return;
+    if (this.rafId === null) {
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = null;
+        this._update();
+      });
     }
   }
 
-  destroy() {
-    window.removeEventListener('scroll', this._scrollBound);
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
+  _update() {
+    const progress = this._progress();
+    const targetFrame = Math.min(
+      this.frameCount,
+      Math.max(1, Math.round(progress * (this.frameCount - 1)) + 1)
+    );
+
+    if (targetFrame !== this.currentFrame) {
+      this.currentFrame = targetFrame;
+      const img = this.images.get(targetFrame);
+      if (img) {
+        this._drawCover(img);
+      } else {
+        this._loadFrame(targetFrame, (loadedImg) => {
+          if (this.currentFrame === targetFrame) {
+            this._drawCover(loadedImg);
+          }
+        });
+        // Nearest frame fallback while loading to avoid any blank frame
+        let closest = null;
+        let minDiff = Infinity;
+        for (const [fn, fImg] of this.images.entries()) {
+          const diff = Math.abs(fn - targetFrame);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = fImg;
+          }
+        }
+        if (closest) this._drawCover(closest);
+      }
+      this._preloadWindow(targetFrame, 18);
     }
+
+    this._updateChapter(progress);
+  }
+
+  _updateChapter(progress) {
+    if (!this.chapterEls || this.chapterEls.length === 0) return;
+    let activeIdx = -1;
+    for (let i = 0; i < this.chapters.length; i++) {
+      const ch = this.chapters[i];
+      if (progress >= ch.from && progress <= ch.to) {
+        activeIdx = i;
+        break;
+      }
+    }
+
+    if (activeIdx !== this.activeChapterIdx) {
+      this.activeChapterIdx = activeIdx;
+      this.chapterEls.forEach((el, idx) => {
+        if (idx === activeIdx) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+    }
+  }
+
+  _drawCover(img) {
+    if (!img || !img.naturalWidth) return;
+    if (!this.canvasWidth || !this.canvasHeight) {
+      this._onResize();
+    }
+    const ctx = this.ctx;
+    const cw = this.canvasWidth;
+    const ch = this.canvasHeight;
+    if (!cw || !ch) return;
+
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+
+    const imgRatio = iw / ih;
+    const canvasRatio = cw / ch;
+
+    let rw, rh, ox, oy;
+    if (canvasRatio > imgRatio) {
+      rw = cw;
+      rh = cw / imgRatio;
+      ox = 0;
+      oy = (ch - rh) / 2;
+    } else {
+      rh = ch;
+      rw = ch * imgRatio;
+      ox = (cw - rw) / 2;
+      oy = 0;
+    }
+
+    ctx.drawImage(img, ox, oy, rw, rh);
   }
 }
 
-/* ─── Init all five scroll scrubbers ─── */
-function initScrollScrubbers() {
-  if (isReduced()) {
-    // Reduced-motion: show frame 0 of each video, no scrubbing
-    $$('.cinematic-main-video').forEach(video => {
-      video.addEventListener('loadedmetadata', () => {
-        try { video.currentTime = 0; } catch (_) {}
-      }, { once: true });
-    });
-    return;
-  }
+/* ─── Init all 5 cinematic frame-sequence players ─── */
+function initCinematicSequences() {
+  const { bride, groom, wedding } = weddingDetails;
 
-  // Video ID → scroll-container ID mapping
-  // Heights are tuned to each video's duration (set in HTML inline styles)
-  const configs = [
-    { sectionId: 'hero',                   videoId: 'video-hero'         },  // 8s  → 250vh
-    { sectionId: 'cinematic-two-stories',  videoId: 'video-couple'       },  // 8s  → 220vh
-    { sectionId: 'cinematic-celebrations', videoId: 'video-celebrations' },  // 8s  → 200vh
-    { sectionId: 'cinematic-sacred',       videoId: 'video-wedding'      },  // 10s → 280vh (climax)
-    { sectionId: 'cinematic-final',        videoId: 'video-final'        },  // 10s → 250vh
+  const sequenceConfigs = [
+    // 01 — HERO
+    {
+      sectionId: 'hero',
+      canvasId: 'canvas-hero',
+      overlayId: 'cto-hero',
+      folder: 'hero',
+      frameCount: 120,
+      chapters: [
+        {
+          from: 0.00, to: 0.20,
+          html: `<span class="cto-eyebrow">WITH THE BLESSINGS OF OUR FAMILIES</span>`
+        },
+        {
+          from: 0.20, to: 0.45,
+          html: `
+            <span class="cto-eyebrow">TOGETHER WITH THEIR FAMILIES</span>
+            <div class="cto-script-names">${bride.name} &amp; ${groom.name}</div>
+          `
+        },
+        {
+          from: 0.45, to: 0.70,
+          html: `
+            <p class="cto-subtitle">invite you to celebrate the joyous union of their wedding</p>
+          `
+        },
+        {
+          from: 0.70, to: 1.00,
+          html: `
+            <span class="cto-eyebrow" style="color:var(--gold-light); letter-spacing:0.35em;">${wedding.displayDate || 'THE WEDDING DAY'}</span>
+            <div class="hero-scroll" aria-hidden="true" style="margin-top:16px;">
+              <span class="hero-scroll-text" style="color:var(--ivory-soft); font-size:10px; letter-spacing:0.25em;">SCROLL TO DISCOVER</span>
+            </div>
+          `
+        }
+      ]
+    },
+
+    // 02 — COUPLE / TWO STORIES
+    {
+      sectionId: 'cinematic-two-stories',
+      canvasId: 'canvas-couple',
+      overlayId: 'cto-couple',
+      folder: 'couple',
+      frameCount: 120,
+      chapters: [
+        {
+          from: 0.00, to: 0.25,
+          html: `
+            <span class="cto-eyebrow">OUR STORY</span>
+            <h2 class="cto-title">Two Stories</h2>
+          `
+        },
+        {
+          from: 0.25, to: 0.50,
+          html: `
+            <h2 class="cto-title">Two Journeys</h2>
+          `
+        },
+        {
+          from: 0.50, to: 0.75,
+          html: `
+            <h2 class="cto-title">One Destination</h2>
+          `
+        },
+        {
+          from: 0.75, to: 1.00,
+          html: `
+            <h2 class="cto-title">A Life Together</h2>
+            <p class="cto-subtitle">Bound together by love, tradition &amp; blessings</p>
+          `
+        }
+      ]
+    },
+
+    // 03 — CELEBRATIONS
+    {
+      sectionId: 'cinematic-celebrations',
+      canvasId: 'canvas-celebrations',
+      overlayId: 'cto-celebrations',
+      folder: 'celebrations',
+      frameCount: 120,
+      chapters: [
+        {
+          from: 0.00, to: 0.25,
+          html: `
+            <span class="cto-eyebrow">A WEEK OF LOVE</span>
+            <h2 class="cto-title">The Celebrations</h2>
+            <span class="cto-telugu">ఆనందాలు</span>
+          `
+        },
+        {
+          from: 0.25, to: 0.50,
+          html: `
+            <span class="cto-eyebrow">THE ENGAGEMENT</span>
+            <h2 class="cto-title">Nischitartham</h2>
+            <span class="cto-telugu">నిశ్చితార్థం</span>
+          `
+        },
+        {
+          from: 0.50, to: 0.75,
+          html: `
+            <span class="cto-eyebrow">HALDI &amp; MANGALASNANAM</span>
+            <h2 class="cto-title">Pasupu</h2>
+            <span class="cto-telugu">పసుపు</span>
+          `
+        },
+        {
+          from: 0.75, to: 1.00,
+          html: `
+            <span class="cto-eyebrow">THE WEDDING CEREMONY</span>
+            <h2 class="cto-title">The Wedding</h2>
+            <span class="cto-telugu">వివాహం</span>
+          `
+        }
+      ]
+    },
+
+    // 04 — WEDDING / SACRED BEGINNING (Climax)
+    {
+      sectionId: 'cinematic-sacred',
+      canvasId: 'canvas-wedding',
+      overlayId: 'cto-wedding',
+      folder: 'wedding',
+      frameCount: 150,
+      chapters: [
+        {
+          from: 0.00, to: 0.20,
+          html: `
+            <span class="cto-eyebrow">THE SACRED UNION</span>
+            <h2 class="cto-title">A Sacred Promise</h2>
+          `
+        },
+        {
+          from: 0.20, to: 0.40,
+          html: `
+            <h2 class="cto-title">Two Families · Two Hearts</h2>
+          `
+        },
+        {
+          from: 0.40, to: 0.65,
+          html: `
+            <h2 class="cto-title">One Sacred Beginning</h2>
+          `
+        },
+        {
+          from: 0.65, to: 0.85,
+          html: `
+            <span class="cto-telugu" style="font-size:clamp(1.8rem, 6.5vw, 3.2rem);">మంగళకరమైన ఆరంభం</span>
+          `
+        },
+        {
+          from: 0.85, to: 1.00,
+          html: `
+            <h2 class="cto-title">Forever Begins Here</h2>
+          `
+        }
+      ]
+    },
+
+    // 05 — FINAL / WITH LOVE
+    {
+      sectionId: 'cinematic-final',
+      canvasId: 'canvas-final',
+      overlayId: 'cto-final',
+      folder: 'final',
+      frameCount: 150,
+      chapters: [
+        {
+          from: 0.00, to: 0.35,
+          html: `
+            <span class="cto-eyebrow">WITH LOVE</span>
+            <div class="cto-script-names">${bride.name} &amp; ${groom.name}</div>
+          `
+        },
+        {
+          from: 0.35, to: 0.65,
+          html: `
+            <p class="cto-subtitle" style="font-size:clamp(1.15rem, 3.8vw, 1.6rem);">Thank you for being part of our beginning</p>
+          `
+        },
+        {
+          from: 0.65, to: 0.85,
+          html: `
+            <span class="cto-telugu" style="font-size:clamp(2.2rem, 7.5vw, 3.8rem); color:var(--gold-light);">శుభమస్తు</span>
+          `
+        },
+        {
+          from: 0.85, to: 1.00,
+          html: `
+            <span class="cto-eyebrow" style="letter-spacing:0.35em;">MAY IT BE AUSPICIOUS</span>
+          `
+        }
+      ]
+    }
   ];
 
-  configs.forEach(({ sectionId, videoId }) => {
-    const section = document.getElementById(sectionId);
-    const video   = document.getElementById(videoId);
-    if (section && video) {
-      new ScrollVideoScrubber(section, video);
-    }
-  });
+  window.cinematicPlayers = sequenceConfigs.map(cfg => new FrameSequencePlayer(cfg));
 }
 
 /* ============================================================
@@ -946,29 +1252,12 @@ function initMusic() {
 }
 
 /* ============================================================
-   HERO SCROLL REVEAL (special handling — immediate)
-   ============================================================ */
-function initHeroReveal() {
-  // Hero content reveals immediately on load (no observer needed)
-  const heroRevealEls = $$('#hero .scroll-reveal');
-  if (isReduced()) {
-    heroRevealEls.forEach(el => el.classList.add('revealed'));
-    return;
-  }
-  requestAnimationFrame(() => {
-    heroRevealEls.forEach(el => {
-      setTimeout(() => el.classList.add('revealed'), 400);
-    });
-  });
-}
-
-/* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   populateContent();
-  initHeroReveal();
   initScrollAnimations();
   initChapterIndicator();
-  initScrollScrubbers(); // Scroll-driven video scrubbing for all 5 videos
+  initCinematicSequences(); // Frame-sequence canvas scrubber for all 5 sequences
+  initMusic();
 });
