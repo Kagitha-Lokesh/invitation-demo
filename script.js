@@ -674,32 +674,32 @@ function generateICSDownload() {
 }
 
 /* ============================================================
-   FRAME SEQUENCE CONFIGURATION (Phase 3 Engine)
+   FRAME SEQUENCE CONFIGURATION (Dual Variant: Mobile & Desktop)
    ============================================================ */
 const sequences = {
   hero: {
-    path: "frames/hero/frame-{index}.webp",
-    frameCount: 120
+    mobile: { path: "frames/mobile/hero/frame-{index}.webp", frameCount: 107 },
+    desktop: { path: "frames/desktop/hero/frame-{index}.webp", frameCount: 192 }
   },
 
   couple: {
-    path: "frames/couple/frame-{index}.webp",
-    frameCount: 120
+    mobile: { path: "frames/mobile/couple/frame-{index}.webp", frameCount: 120 },
+    desktop: { path: "frames/desktop/couple/frame-{index}.webp", frameCount: 192 }
   },
 
   celebrations: {
-    path: "frames/celebrations/frame-{index}.webp",
-    frameCount: 120
+    mobile: { path: "frames/mobile/celebrations/frame-{index}.webp", frameCount: 109 },
+    desktop: { path: "frames/desktop/celebrations/frame-{index}.webp", frameCount: 192 }
   },
 
   wedding: {
-    path: "frames/wedding/frame-{index}.webp",
-    frameCount: 150
+    mobile: { path: "frames/mobile/wedding/frame-{index}.webp", frameCount: 150 },
+    desktop: { path: "frames/desktop/wedding/frame-{index}.webp", frameCount: 240 }
   },
 
   final: {
-    path: "frames/final/frame-{index}.webp",
-    frameCount: 150
+    mobile: { path: "frames/mobile/final/frame-{index}.webp", frameCount: 150 },
+    desktop: { path: "frames/desktop/final/frame-{index}.webp", frameCount: 240 }
   }
 };
 
@@ -716,9 +716,13 @@ class FrameSequencePlayer {
     if (!this.section || !this.canvas) return;
 
     this.ctx = this.canvas.getContext('2d', { alpha: false });
-    this.pathPattern = sequenceConfig.path || "frames/hero/frame-{index}.webp";
-    this.frameCount = sequenceConfig.frameCount || 120;
+    this.config = sequenceConfig;
     this.chapters = sequenceConfig.chapters || [];
+
+    this.currentVariant = this._getDeviceVariant();
+    const activeCfg = this._getActiveConfig();
+    this.pathPattern = activeCfg.path;
+    this.frameCount = activeCfg.frameCount;
 
     this.images = new Map();
     this.loading = new Set();
@@ -737,27 +741,41 @@ class FrameSequencePlayer {
     this._init();
   }
 
+  _getDeviceVariant() {
+    return window.innerWidth >= 768 ? 'desktop' : 'mobile';
+  }
+
+  _getActiveConfig() {
+    if (this.config.mobile && this.config.desktop) {
+      return this.config[this.currentVariant] || this.config.mobile;
+    }
+    return {
+      path: this.config.path || "frames/mobile/hero/frame-{index}.webp",
+      frameCount: this.config.frameCount || 107
+    };
+  }
+
   _init() {
     this._onResize();
     window.addEventListener('resize', this._onResize, { passive: true });
     window.addEventListener('scroll', this._onScroll, { passive: true });
-    window.addEventListener('load', this._onResize, { once: true });
+    window.addEventListener('load', this._onResize, { passive: true });
 
     if (this.textOverlay && this.chapters.length > 0) {
       this._buildChapters();
     }
 
-    // Immediately load Frame 1 so canvas is never blank
+    // Immediately load & paint Frame 1 so canvas is NEVER blank or black
     this._loadFrame(1, (img) => {
       this.lastValidImg = img;
       this._drawCover(img);
       this.renderedFrame = 1;
     });
 
-    // IntersectionObserver only for asset priming (200vh ahead)
+    // IntersectionObserver for asset priming
     if (!isReduced()) {
-      // Preload initial 30 frames
-      for (let i = 1; i <= Math.min(30, this.frameCount); i++) {
+      // Preload initial 20 frames immediately
+      for (let i = 1; i <= Math.min(20, this.frameCount); i++) {
         this._loadFrame(i);
       }
 
@@ -769,7 +787,7 @@ class FrameSequencePlayer {
             primeObserver.disconnect();
           }
         });
-      }, { rootMargin: '200vh 0px' });
+      }, { rootMargin: '100% 0px' });
       primeObserver.observe(this.section);
     }
 
@@ -795,32 +813,43 @@ class FrameSequencePlayer {
   _loadFrame(frameNum, cb) {
     if (frameNum < 1 || frameNum > this.frameCount) return;
     if (this.images.has(frameNum)) {
-      if (cb) cb(this.images.get(frameNum));
-      return;
+      const cached = this.images.get(frameNum);
+      if (cached && cached.naturalWidth > 0) {
+        if (cb) cb(cached);
+        return;
+      }
     }
     if (this.loading.has(frameNum)) return;
 
     this.loading.add(frameNum);
     const img = new Image();
-    img.src = this._formatFrameUrl(frameNum);
 
-    const onComplete = () => {
-      this.images.set(frameNum, img);
+    const handleSuccess = () => {
       this.loading.delete(frameNum);
-      if (cb) cb(img);
-      if (this.currentFrame === frameNum) {
-        this.lastValidImg = img;
-        this._drawCover(img);
-        this.renderedFrame = frameNum;
+      if (img.naturalWidth > 0) {
+        this.images.set(frameNum, img);
+        if (cb) cb(img);
+        if (this.currentFrame === frameNum) {
+          this.lastValidImg = img;
+          this._drawCover(img);
+          this.renderedFrame = frameNum;
+        }
       }
     };
 
-    if (typeof img.decode === 'function') {
-      img.decode().then(onComplete).catch(onComplete);
-    } else {
-      img.onload = onComplete;
-      img.onerror = () => { this.loading.delete(frameNum); };
-    }
+    img.onload = () => {
+      if (typeof img.decode === 'function') {
+        img.decode().then(handleSuccess).catch(handleSuccess);
+      } else {
+        handleSuccess();
+      }
+    };
+
+    img.onerror = () => {
+      this.loading.delete(frameNum);
+    };
+
+    img.src = this._formatFrameUrl(frameNum);
   }
 
   _preloadWindow(centerIdx, radius = 20) {
@@ -844,16 +873,35 @@ class FrameSequencePlayer {
   _onResize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = this.canvas.getBoundingClientRect();
-    const w = rect.width || window.innerWidth;
-    const h = rect.height || window.innerHeight;
+    const w = rect.width || window.innerWidth || 412;
+    const h = rect.height || window.innerHeight || 915;
 
-    this.canvas.width = Math.round(w * dpr);
-    this.canvas.height = Math.round(h * dpr);
-    this.canvasWidth = this.canvas.width;
-    this.canvasHeight = this.canvas.height;
+    const newW = Math.round(w * dpr);
+    const newH = Math.round(h * dpr);
+
+    if (this.canvas.width !== newW || this.canvas.height !== newH) {
+      this.canvas.width = newW;
+      this.canvas.height = newH;
+    }
+    this.canvasWidth = newW;
+    this.canvasHeight = newH;
+
+    // Responsive Device Variant Switching (Mobile <-> Desktop)
+    const newVariant = this._getDeviceVariant();
+    if (newVariant !== this.currentVariant) {
+      this.currentVariant = newVariant;
+      const activeCfg = this._getActiveConfig();
+      this.pathPattern = activeCfg.path;
+      this.frameCount = activeCfg.frameCount;
+      this.images.clear();
+      this.loading.clear();
+      this.renderedFrame = 0;
+      this.isPrimed = false;
+      this._preloadWindow(this.currentFrame, 15);
+    }
 
     const imgToDraw = this.images.get(this.currentFrame) || this.lastValidImg || this.images.get(1);
-    if (imgToDraw) {
+    if (imgToDraw && imgToDraw.naturalWidth > 0) {
       this._drawCover(imgToDraw);
     }
   }
@@ -886,24 +934,24 @@ class FrameSequencePlayer {
 
     if (targetFrame !== this.renderedFrame) {
       const img = this.images.get(targetFrame);
-      if (img) {
+      if (img && img.naturalWidth > 0) {
         this._drawCover(img);
         this.lastValidImg = img;
         this.renderedFrame = targetFrame;
       } else {
-        // Requested frame is still loading — KEEP PREVIOUS VALID FRAME (never blank/clear canvas)
-        if (this.lastValidImg) {
+        // Keep rendering the previous valid frame during loading
+        if (this.lastValidImg && this.lastValidImg.naturalWidth > 0) {
           this._drawCover(this.lastValidImg);
         }
         this._loadFrame(targetFrame, (loadedImg) => {
-          if (this.currentFrame === targetFrame) {
+          if (this.currentFrame === targetFrame && loadedImg && loadedImg.naturalWidth > 0) {
             this._drawCover(loadedImg);
             this.lastValidImg = loadedImg;
             this.renderedFrame = targetFrame;
           }
         });
       }
-      this._preloadWindow(targetFrame, 20);
+      this._preloadWindow(targetFrame, 15);
     }
 
     this._updateChapter(progress);
@@ -933,11 +981,12 @@ class FrameSequencePlayer {
   }
 
   _drawCover(img) {
-    if (!img || !img.naturalWidth) return;
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
     if (!this.canvasWidth || !this.canvasHeight) {
       this._onResize();
     }
     const ctx = this.ctx;
+    if (!ctx) return;
     const cw = this.canvasWidth;
     const ch = this.canvasHeight;
     if (!cw || !ch) return;
@@ -1080,8 +1129,8 @@ function initCinematicSequences() {
       section: 'hero',
       canvas: 'canvas-hero',
       textOverlay: 'cto-hero',
-      path: sequences.hero.path,
-      frameCount: sequences.hero.frameCount,
+      mobile: sequences.hero.mobile,
+      desktop: sequences.hero.desktop,
       chapters: [
         {
           from: 0.00, to: 0.20,
@@ -1117,8 +1166,8 @@ function initCinematicSequences() {
       section: 'cinematic-two-stories',
       canvas: 'canvas-couple',
       textOverlay: 'cto-couple',
-      path: sequences.couple.path,
-      frameCount: sequences.couple.frameCount,
+      mobile: sequences.couple.mobile,
+      desktop: sequences.couple.desktop,
       chapters: [
         {
           from: 0.00, to: 0.25,
@@ -1154,8 +1203,8 @@ function initCinematicSequences() {
       section: 'cinematic-celebrations',
       canvas: 'canvas-celebrations',
       textOverlay: 'cto-celebrations',
-      path: sequences.celebrations.path,
-      frameCount: sequences.celebrations.frameCount,
+      mobile: sequences.celebrations.mobile,
+      desktop: sequences.celebrations.desktop,
       chapters: [
         {
           from: 0.00, to: 0.25,
@@ -1197,8 +1246,8 @@ function initCinematicSequences() {
       section: 'cinematic-sacred',
       canvas: 'canvas-wedding',
       textOverlay: 'cto-wedding',
-      path: sequences.wedding.path,
-      frameCount: sequences.wedding.frameCount,
+      mobile: sequences.wedding.mobile,
+      desktop: sequences.wedding.desktop,
       chapters: [
         {
           from: 0.00, to: 0.20,
@@ -1239,8 +1288,8 @@ function initCinematicSequences() {
       section: 'cinematic-final',
       canvas: 'canvas-final',
       textOverlay: 'cto-final',
-      path: sequences.final.path,
-      frameCount: sequences.final.frameCount,
+      mobile: sequences.final.mobile,
+      desktop: sequences.final.desktop,
       chapters: [
         {
           from: 0.00, to: 0.35,
@@ -1386,12 +1435,424 @@ function initMusic() {
 }
 
 /* ============================================================
+   CINEMATIC MOOD-ADAPTIVE PARTICLE & PETAL ENGINE
+   ============================================================ */
+const SECTION_PARTICLE_THEMES = {
+  // 01 — HERO: Royal Celestial Gold & Stardust
+  'hero': {
+    themeName: 'royal-celestial',
+    sparkles: {
+      count: 45,
+      colors: ['#FFE082', '#FFD700', '#FFF8E1', '#E6CA65', '#FFFDE7'],
+      vy: [-0.6, -0.25],
+      size: [1.0, 3.0],
+      glow: 10,
+      shape: 'star'
+    },
+    petals: {
+      count: 10,
+      colors: ['#FFD54F', '#FFE082', '#FFF9C4'],
+      shape: 'gold-leaf',
+      vy: [0.35, 0.7],
+      w: [5, 9],
+      h: [8, 14]
+    }
+  },
+
+  // 04 — COUPLE / TWO STORIES: Romantic Rose & Blush Petals
+  'cinematic-two-stories': {
+    themeName: 'romantic-rose',
+    sparkles: {
+      count: 30,
+      colors: ['#FFD1DC', '#FFE4E1', '#FFB6C1', '#FFD700', '#FFF0F5'],
+      vy: [-0.4, -0.15],
+      size: [0.8, 2.4],
+      glow: 7,
+      shape: 'glow-dot'
+    },
+    petals: {
+      count: 24,
+      colors: ['#C2185B', '#E91E63', '#FF4081', '#FF6B8B', '#F48FB1', '#FF8A80'],
+      shape: 'rose-petal',
+      vy: [0.45, 0.95],
+      w: [8, 14],
+      h: [10, 18]
+    }
+  },
+
+  // 06 — CELEBRATIONS: Festive Pasupu (Turmeric) & Vibrant Marigolds
+  'cinematic-celebrations': {
+    themeName: 'festive-haldi',
+    sparkles: {
+      count: 45,
+      colors: ['#FFEB3B', '#FFC107', '#FF9800', '#FFF59D', '#FFE082'],
+      vy: [-0.7, -0.3],
+      size: [1.2, 3.2],
+      glow: 8,
+      shape: 'festive-spark'
+    },
+    petals: {
+      count: 28,
+      colors: ['#FF9800', '#FFB300', '#FFC107', '#E65100', '#F57C00', '#FFD54F'],
+      shape: 'marigold-petal',
+      vy: [0.65, 1.25],
+      w: [6, 11],
+      h: [12, 20]
+    }
+  },
+
+  // 08 — SACRED BEGINNING: Sacred Akshintalu & Holy Agni Embers
+  'cinematic-sacred': {
+    themeName: 'sacred-akshintalu',
+    sparkles: {
+      count: 48,
+      colors: ['#FF3D00', '#FF6E40', '#FFA000', '#FFD54F', '#FF7043'],
+      vy: [-0.85, -0.35],
+      size: [1.0, 3.2],
+      glow: 12,
+      shape: 'agni-ember'
+    },
+    petals: {
+      count: 32,
+      colors: ['#FFF59D', '#FFD54F', '#FFCA28', '#FFE082', '#D32F2F'],
+      shape: 'akshintalu-grain',
+      vy: [0.55, 1.1],
+      w: [4, 7],
+      h: [8, 14]
+    }
+  },
+
+  // 10 — FINAL / WITH LOVE: Grand Pushpa Vrushti & Golden Subhamasthu Shower
+  'cinematic-final': {
+    themeName: 'pushpa-vrushti',
+    sparkles: {
+      count: 55,
+      colors: ['#FFD700', '#FFF8E1', '#FFE082', '#FF80AB', '#FFFFFF'],
+      vy: [-0.65, -0.25],
+      size: [1.2, 3.5],
+      glow: 10,
+      shape: 'star'
+    },
+    petals: {
+      count: 36,
+      colors: ['#D50000', '#FF1744', '#FFB300', '#FFFFFF', '#FF4081', '#FF9800'],
+      shape: 'mixed-pushpa',
+      vy: [0.7, 1.35],
+      w: [7, 13],
+      h: [9, 17]
+    }
+  }
+};
+
+class CinematicParticleEngine {
+  constructor(effectsEl) {
+    this.container = effectsEl;
+    if (!this.container) return;
+
+    const sectionEl = this.container.closest('section');
+    const sectionId = sectionEl ? sectionEl.id : 'hero';
+    this.theme = SECTION_PARTICLE_THEMES[sectionId] || SECTION_PARTICLE_THEMES['hero'];
+
+    this.canvas = document.createElement('canvas');
+    this.canvas.className = 'particle-canvas';
+    this.container.appendChild(this.canvas);
+    this.ctx = this.canvas.getContext('2d');
+
+    this.particles = [];
+    this.isRunning = false;
+    this.rafId = null;
+    this.width = 0;
+    this.height = 0;
+
+    this._onResize = this._onResize.bind(this);
+    this._render = this._render.bind(this);
+
+    this._init();
+  }
+
+  _init() {
+    this._onResize();
+    window.addEventListener('resize', this._onResize, { passive: true });
+
+    this._spawnParticles();
+
+    // IntersectionObserver to pause loop when offscreen
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (!this.isRunning) {
+            this.isRunning = true;
+            this._render();
+          }
+        } else {
+          this.isRunning = false;
+          if (this.rafId) cancelAnimationFrame(this.rafId);
+        }
+      });
+    }, { rootMargin: '50px 0px' });
+
+    observer.observe(this.container.parentElement || this.container);
+  }
+
+  _onResize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = this.container.getBoundingClientRect();
+    const w = rect.width || window.innerWidth || 412;
+    const h = rect.height || window.innerHeight || 915;
+
+    this.width = w;
+    this.height = h;
+    this.canvas.width = Math.round(w * dpr);
+    this.canvas.height = Math.round(h * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  _spawnParticles() {
+    const isMobile = window.innerWidth < 768;
+    const spCfg = this.theme.sparkles;
+    const ptCfg = this.theme.petals;
+
+    const sparkleCount = isMobile ? Math.round(spCfg.count * 0.65) : spCfg.count;
+    const petalCount = isMobile ? Math.round(ptCfg.count * 0.65) : ptCfg.count;
+
+    this.particles = [];
+
+    // 1. Spawning Mood Sparkles / Embers
+    for (let i = 0; i < sparkleCount; i++) {
+      const minVy = spCfg.vy[0];
+      const maxVy = spCfg.vy[1];
+      const minSz = spCfg.size[0];
+      const maxSz = spCfg.size[1];
+      const color = spCfg.colors[Math.floor(Math.random() * spCfg.colors.length)];
+
+      this.particles.push({
+        type: 'sparkle',
+        subType: spCfg.shape,
+        x: Math.random() * this.width,
+        y: Math.random() * this.height,
+        radius: Math.random() * (maxSz - minSz) + minSz,
+        baseAlpha: Math.random() * 0.45 + 0.35,
+        twinkleSpeed: Math.random() * 0.04 + 0.015,
+        twinklePhase: Math.random() * Math.PI * 2,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -(Math.random() * Math.abs(maxVy - minVy) + Math.abs(minVy)),
+        color: color,
+        glow: spCfg.glow || 8
+      });
+    }
+
+    // 2. Spawning Mood Petals / Akshintalu
+    for (let i = 0; i < petalCount; i++) {
+      const minVy = ptCfg.vy[0];
+      const maxVy = ptCfg.vy[1];
+      const minW = ptCfg.w[0];
+      const maxW = ptCfg.w[1];
+      const minH = ptCfg.h[0];
+      const maxH = ptCfg.h[1];
+      const color = ptCfg.colors[Math.floor(Math.random() * ptCfg.colors.length)];
+
+      this.particles.push({
+        type: 'petal',
+        subType: ptCfg.shape,
+        x: Math.random() * this.width,
+        y: Math.random() * this.height,
+        w: Math.random() * (maxW - minW) + minW,
+        h: Math.random() * (maxH - minH) + minH,
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.035,
+        flip: Math.random() * Math.PI * 2,
+        flipSpeed: Math.random() * 0.045 + 0.02,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: Math.random() * (maxVy - minVy) + minVy,
+        color: color,
+        alpha: Math.random() * 0.35 + 0.55
+      });
+    }
+  }
+
+  _render() {
+    if (!this.isRunning) return;
+
+    const ctx = this.ctx;
+    const w = this.width;
+    const h = this.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const time = performance.now() * 0.001;
+    const scrollVelocity = (window.scrollAnimationController?.velocity || 0) * 1.5;
+
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+
+      if (p.type === 'sparkle') {
+        p.twinklePhase += p.twinkleSpeed;
+        const alpha = Math.max(0.05, Math.min(1, p.baseAlpha + Math.sin(p.twinklePhase) * 0.35));
+
+        p.x += p.vx + Math.sin(time + i) * 0.3;
+        p.y += p.vy - scrollVelocity * 0.4;
+
+        if (p.y < -15) p.y = h + 15;
+        if (p.y > h + 15) p.y = -15;
+        if (p.x < -15) p.x = w + 15;
+        if (p.x > w + 15) p.x = -15;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        if (p.subType === 'star') {
+          this._drawStar(ctx, p.x, p.y, p.radius * 1.8, p.color, p.glow);
+        } else if (p.subType === 'agni-ember') {
+          this._drawAgniEmber(ctx, p.x, p.y, p.radius, p.color, p.glow);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = p.glow;
+          ctx.fill();
+        }
+        ctx.restore();
+
+      } else if (p.type === 'petal') {
+        p.rot += p.rotSpeed;
+        p.flip += p.flipSpeed;
+
+        p.x += p.vx + Math.sin(time * 1.2 + i) * 0.7;
+        p.y += p.vy + scrollVelocity * 0.55;
+
+        if (p.y > h + 25) p.y = -25;
+        if (p.y < -25) p.y = h + 25;
+        if (p.x < -25) p.x = w + 25;
+        if (p.x > w + 25) p.x = -25;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.scale(Math.sin(p.flip), 1);
+        ctx.globalAlpha = p.alpha;
+
+        if (p.subType === 'rose-petal') {
+          this._drawRosePetal(ctx, p.w, p.h, p.color);
+        } else if (p.subType === 'marigold-petal') {
+          this._drawMarigoldPetal(ctx, p.w, p.h, p.color);
+        } else if (p.subType === 'akshintalu-grain') {
+          this._drawAkshintaluGrain(ctx, p.w, p.h, p.color);
+        } else {
+          this._drawMixedPetal(ctx, p.w, p.h, p.color);
+        }
+
+        ctx.restore();
+      }
+    }
+
+    ctx.globalAlpha = 1.0;
+    this.rafId = requestAnimationFrame(this._render);
+  }
+
+  /* ─── Specialized Drawing Shapes ─── */
+  _drawStar(ctx, x, y, r, color, glow) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = glow;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y - r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.quadraticCurveTo(x, y, x, y + r);
+    ctx.quadraticCurveTo(x, y, x - r, y);
+    ctx.quadraticCurveTo(x, y, x, y - r);
+    ctx.fill();
+    // Center bright core
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+  }
+
+  _drawAgniEmber(ctx, x, y, r, color, glow) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = glow;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    // Inner hot nucleus
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.45, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFEE58';
+    ctx.fill();
+  }
+
+  _drawRosePetal(ctx, w, h, color) {
+    ctx.beginPath();
+    ctx.moveTo(0, -h / 2);
+    ctx.bezierCurveTo(w / 1.5, -h / 2.5, w / 1.5, h / 3, 0, h / 2);
+    ctx.bezierCurveTo(-w / 1.5, h / 3, -w / 1.5, -h / 2.5, 0, -h / 2);
+    ctx.fillStyle = color;
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 4;
+    ctx.fill();
+  }
+
+  _drawMarigoldPetal(ctx, w, h, color) {
+    ctx.beginPath();
+    ctx.moveTo(0, -h / 2);
+    ctx.quadraticCurveTo(w / 2, -h / 4, w / 2, h / 4);
+    ctx.quadraticCurveTo(w / 3, h / 2, 0, h / 2);
+    ctx.quadraticCurveTo(-w / 3, h / 2, -w / 2, h / 4);
+    ctx.quadraticCurveTo(-w / 2, -h / 4, 0, -h / 2);
+    ctx.fillStyle = color;
+    ctx.shadowColor = 'rgba(230,81,0,0.4)';
+    ctx.shadowBlur = 4;
+    ctx.fill();
+  }
+
+  _drawAkshintaluGrain(ctx, w, h, color) {
+    // Sacred rice grain shape
+    ctx.beginPath();
+    ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.shadowColor = 'rgba(255,215,0,0.5)';
+    ctx.shadowBlur = 3;
+    ctx.fill();
+    // Sacred Kumkuma tip
+    ctx.beginPath();
+    ctx.arc(0, -h / 2.5, w / 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#D32F2F';
+    ctx.fill();
+  }
+
+  _drawMixedPetal(ctx, w, h, color) {
+    ctx.beginPath();
+    ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = 3;
+    ctx.fill();
+  }
+}
+
+function initCinematicEffects() {
+  const effectContainers = $$('.cinematic-effects');
+  window.particleEngines = effectContainers.map(container => new CinematicParticleEngine(container));
+}
+
+/* ============================================================
    INITIALIZATION
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   populateContent();
   window.scrollAnimationController = new ScrollAnimationController();
   initChapterIndicator();
   initCinematicSequences();
+  initCinematicEffects();
   initMusic();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
+
